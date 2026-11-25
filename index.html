@@ -370,6 +370,75 @@ body.no-scroll{overflow:hidden}
 }
 .toast.is-on{opacity:1;transform:translate(-50%,0)}
 
+/* ================= 밤 인사 팝업 ================= */
+.night{position:fixed;inset:0;z-index:85;display:flex;align-items:center;justify-content:center;padding:22px 18px;animation:fade .2s ease both}
+.night__scrim{position:absolute;inset:0;background:radial-gradient(120% 80% at 50% 34%,rgba(70,48,130,.20) 0%,rgba(32,24,62,.46) 100%);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+.night__card{
+  position:relative;width:100%;max-width:336px;padding:15px 16px 14px;border-radius:26px;
+  background:linear-gradient(180deg,#FFFFFF 0%,#FCF8FF 60%,#F8F1FF 100%);
+  border:1px solid #EEE5FF;box-shadow:0 26px 64px rgba(52,35,102,.30);
+  animation:nightIn .46s cubic-bezier(.2,1.4,.4,1) both;
+}
+@keyframes nightIn{from{transform:translateY(18px) scale(.9);opacity:0}to{transform:none;opacity:1}}
+.night__card:focus{outline:none}
+.night__card::before{
+  content:'';position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;
+  background:radial-gradient(90% 62% at 16% 0%,rgba(199,178,255,.32),rgba(255,255,255,0) 70%);
+}
+.night__x{
+  position:absolute;top:9px;right:9px;z-index:2;width:30px;height:30px;border-radius:11px;
+  display:grid;place-items:center;font-size:13px;font-weight:800;color:#8E86A8;background:#F5F1FF;
+  transition:transform .14s,background .2s;
+}
+.night__x:active{transform:scale(.92);background:#EDE6FF}
+.night__head{position:relative;display:flex;align-items:center;gap:3px;min-height:86px}
+.night__buddy{flex:none;width:88px;height:88px;margin:-5px 0 -3px -7px}
+.night__buddy svg{display:block;width:100%;height:100%;overflow:visible}
+.nb-bob{transform-box:view-box;animation:nbBob 3.6s ease-in-out infinite}
+@keyframes nbBob{0%,100%{transform:translateY(0) rotate(-1.2deg)}50%{transform:translateY(-4px) rotate(1.4deg)}}
+.nb-wave{transform-box:view-box;transform-origin:89px 61px;animation:nbWave 2.6s ease-in-out infinite}
+@keyframes nbWave{0%,100%{transform:rotate(0deg)}30%{transform:rotate(-18deg)}62%{transform:rotate(8deg)}}
+.nb-heart{transform-box:view-box;transform-origin:99px 37px;animation:nbHeart 2.6s ease-in-out infinite}
+@keyframes nbHeart{0%,52%{opacity:0;transform:translateY(3px) scale(.55)}72%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-7px) scale(.85)}}
+.nb-spark{transform-box:view-box;animation:nbSpark 3.4s ease-in-out infinite}
+.nb-spark--2{animation-delay:1.2s}
+@keyframes nbSpark{0%,100%{opacity:.45}50%{opacity:1}}
+.night__bubble{
+  position:relative;flex:1;min-width:0;padding:10px 11px 10px 12px;border-radius:16px 16px 16px 7px;
+  background:linear-gradient(135deg,#F3EBFF,#FCEFFB);border:1px solid #E8DDFF;
+}
+.night__bubble::before{
+  content:'';position:absolute;left:-6px;bottom:8px;width:11px;height:11px;
+  background:#F4ECFF;border-left:1px solid #E8DDFF;border-bottom:1px solid #E8DDFF;
+  border-radius:1px 0 0 3px;transform:rotate(45deg);
+}
+.night__kicker{font-size:10.5px;font-weight:800;color:#8B6CF0;letter-spacing:.01em}
+.night__title{font-size:15.5px;font-weight:900;line-height:1.34;letter-spacing:-.03em;margin-top:3px;word-break:keep-all;padding-right:22px}
+.night__chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:11px}
+.night__chip{
+  display:inline-flex;align-items:center;gap:5px;max-width:100%;padding:5px 10px 5px 6px;border-radius:999px;
+  background:#F7F3FF;border:1px solid #EDE5FF;font-size:11.5px;font-weight:800;color:var(--ink2);
+}
+.night__chip i{
+  font-style:normal;flex:none;width:19px;height:19px;border-radius:50%;display:grid;place-items:center;
+  font-size:11.5px;box-shadow:inset 0 0 0 1px rgba(90,60,150,.06);
+}
+.night__chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.night__chip--more{color:var(--green-d);background:#F1EBFF;border-color:#E3D8FF;padding:5px 10px}
+.night__msg{margin-top:11px;font-size:12.5px;font-weight:700;line-height:1.6;color:var(--ink2);word-break:keep-all}
+.night__btns{margin-top:14px}
+.night__btns .btn{width:100%;padding:13px 16px;border-radius:16px;font-size:14px}
+.night__later{
+  display:block;width:100%;margin-top:6px;padding:8px;border-radius:12px;
+  font-size:12px;font-weight:800;color:var(--muted);transition:background .2s,color .2s;
+}
+.night__later:active{background:#F4F1FB}
+@media (max-width:359px){
+  .night__buddy{width:76px;height:76px}
+  .night__head{min-height:76px}
+  .night__title{font-size:14.5px}
+}
+
 /* ================= 폼 ================= */
 .field{margin-top:14px}
 .field > label{display:block;font-size:12px;font-weight:800;color:var(--ink2);margin-bottom:6px}
@@ -807,6 +876,90 @@ body.no-scroll{overflow:hidden}
     <h2>오늘 루틴 올클리어!</h2>
     <p id="celebMsg">연속 기록이 이어지고 있어요.</p>
     <button class="btn btn--primary" id="celebBtn">좋아요!</button>
+  </div>
+</div>
+
+<!-- ============ 밤 인사 팝업 (귀여운 캐릭터) ============ -->
+<div class="night" id="nightPopup" hidden>
+  <div class="night__scrim" data-night="dismiss"></div>
+  <div class="night__card" role="dialog" aria-modal="true" aria-labelledby="nightTitle" aria-describedby="nightMsg" tabindex="-1">
+    <button class="night__x" type="button" data-night="dismiss" aria-label="이 알림 닫기">✕</button>
+    <div class="night__head">
+      <div class="night__buddy">
+        <svg viewBox="0 0 120 120" role="img" aria-label="손 흔들며 반기는 연보라 캐릭터">
+          <defs>
+            <radialGradient id="nbGlow" cx="50%" cy="48%" r="52%">
+              <stop offset="0" stop-color="#EFE4FF"/>
+              <stop offset="55%" stop-color="#EFE4FF" stop-opacity=".5"/>
+              <stop offset="100%" stop-color="#EFE4FF" stop-opacity="0"/>
+            </radialGradient>
+            <linearGradient id="nbBody" x1="26%" y1="6%" x2="80%" y2="96%">
+              <stop offset="0" stop-color="#E3D8FF"/>
+              <stop offset="46%" stop-color="#C5ACFB"/>
+              <stop offset="100%" stop-color="#A88AF5"/>
+            </linearGradient>
+            <linearGradient id="nbBelly" x1="50%" y1="0%" x2="50%" y2="100%">
+              <stop offset="0" stop-color="#FFFFFF" stop-opacity=".7"/>
+              <stop offset="100%" stop-color="#FFFFFF" stop-opacity=".1"/>
+            </linearGradient>
+            <radialGradient id="nbCheek" cx="50%" cy="50%" r="50%">
+              <stop offset="0" stop-color="#FF93BE" stop-opacity=".85"/>
+              <stop offset="100%" stop-color="#FF93BE" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="nbEye" cx="36%" cy="28%" r="78%">
+              <stop offset="0" stop-color="#5C4686"/>
+              <stop offset="100%" stop-color="#33254F"/>
+            </radialGradient>
+          </defs>
+          <circle cx="60" cy="60" r="57" fill="url(#nbGlow)"/>
+          <g class="nb-spark" fill="#C9B4FA">
+            <path d="M20 33.6l2.1 5.4 5.4 2.1-5.4 2.1-2.1 5.4-2.1-5.4-5.4-2.1 5.4-2.1z"/>
+          </g>
+          <g class="nb-spark nb-spark--2" fill="#FFC2DC">
+            <path d="M25 88l1.7 4.3 4.3 1.7-4.3 1.7-1.7 4.3-1.7-4.3-4.3-1.7 4.3-1.7z"/>
+          </g>
+          <ellipse cx="60" cy="104.4" rx="24.5" ry="4.4" fill="#7A5BCB" opacity=".15"/>
+          <ellipse cx="48.4" cy="98.4" rx="9" ry="6" fill="#B79DF9"/>
+          <ellipse cx="71.6" cy="98.4" rx="9" ry="6" fill="#A98BF6"/>
+          <g class="nb-bob">
+            <path d="M60 22c19.6 0 33 14.3 33 35.4 0 24.8-13.9 44.6-33 44.6S27 82.2 27 57.4C27 36.3 40.4 22 60 22z" fill="url(#nbBody)"/>
+            <ellipse cx="60" cy="70.4" rx="19.6" ry="16.6" fill="url(#nbBelly)"/>
+            <ellipse cx="43.6" cy="37.4" rx="8.6" ry="5.4" fill="#FFFFFF" opacity=".18" transform="rotate(-30 43.6 37.4)"/>
+            <path d="M60 22.6c.4-4.8 2.1-8.2 5.4-10.4" fill="none" stroke="#8FD9C0" stroke-width="3" stroke-linecap="round"/>
+            <ellipse cx="67.6" cy="10.8" rx="5" ry="3.2" fill="#8FD9C0" transform="rotate(-24 67.6 10.8)"/>
+            <ellipse cx="55.4" cy="9.2" rx="3.4" ry="2.3" fill="#A7E6D2" transform="rotate(26 55.4 9.2)"/>
+            <path d="M31.4 62.4c-5 2-7 5.5-6.3 9.3" fill="none" stroke="#C0A8FB" stroke-width="6.4" stroke-linecap="round"/>
+            <g class="nb-wave">
+              <path d="M89 61.2c5-1.2 7.6-4.7 7.6-9" fill="none" stroke="#C5ACFB" stroke-width="6.4" stroke-linecap="round"/>
+              <circle cx="97.4" cy="50" r="4" fill="#D5C2FD"/>
+            </g>
+            <ellipse cx="48.6" cy="55.8" rx="5.7" ry="6.9" fill="url(#nbEye)"/>
+            <ellipse cx="71.4" cy="55.8" rx="5.7" ry="6.9" fill="url(#nbEye)"/>
+            <circle cx="50.6" cy="52.9" r="2" fill="#FFFFFF" opacity=".95"/>
+            <circle cx="73.4" cy="52.9" r="2" fill="#FFFFFF" opacity=".95"/>
+            <circle cx="46.7" cy="58.6" r="1" fill="#FFFFFF" opacity=".65"/>
+            <circle cx="69.5" cy="58.6" r="1" fill="#FFFFFF" opacity=".65"/>
+            <ellipse cx="38.6" cy="65.8" rx="5.9" ry="3.8" fill="url(#nbCheek)"/>
+            <ellipse cx="81.4" cy="65.8" rx="5.9" ry="3.8" fill="url(#nbCheek)"/>
+            <path d="M55.8 67.4c.5 3.7 7.9 3.7 8.4 0z" fill="#3E2E60"/>
+            <path d="M58.4 69.7c.4 1.2 2.8 1.2 3.2 0z" fill="#FF9EC4"/>
+          </g>
+          <g class="nb-heart" fill="#FF9EC4">
+            <path d="M99.4 33.4c-1.7-2.7-5.9-1.7-5.9 1.7 0 2.5 3.1 4.6 5.9 6.3 2.8-1.7 5.9-3.8 5.9-6.3 0-3.4-4.2-4.4-5.9-1.7z"/>
+          </g>
+        </svg>
+      </div>
+      <div class="night__bubble">
+        <p class="night__kicker">🌙 자기 전 잠깐</p>
+        <h2 class="night__title" id="nightTitle">오늘 루틴 2개 남았어요!</h2>
+      </div>
+    </div>
+    <ul class="night__chips" id="nightChips" aria-label="남은 루틴"></ul>
+    <p class="night__msg" id="nightMsg">잠들기 전에 가볍게 하나만 더 해 볼까요? 안 해도 괜찮아요 💜</p>
+    <div class="night__btns">
+      <button class="btn btn--primary" type="button" id="nightGo">지금 보러 가기</button>
+      <button class="night__later" type="button" data-night="dismiss">오늘은 괜찮아요</button>
+    </div>
   </div>
 </div>
 
@@ -1413,7 +1566,7 @@ function askConfirm(title, msg, yesLabel) {
    모달 열고 닫기
    ============================================================ */
 function anyModalOpen() {
-  return ['timerModal', 'dayModal', 'editModal', 'ddayModal', 'confirmModal'].some(id => {
+  return ['timerModal', 'dayModal', 'editModal', 'ddayModal', 'confirmModal', 'nightPopup'].some(id => {
     const el = document.getElementById(id);
     return el && !el.hidden;
   });
@@ -1762,6 +1915,79 @@ function closeCelebrate() {
   const c = $('#confetti');
   const ctx = c.getContext('2d');
   ctx.clearRect(0, 0, c.width, c.height);
+}
+
+/* ============================================================
+   밤 인사 팝업 — 밤 9시 이후 남은 루틴을 귀여운 캐릭터가 알려 줘요
+   ============================================================ */
+const NIGHT_KEY = 'hyeonho-night-dismissed-';
+let nightShown = false;        // 이번에 앱을 열어 둔 동안 이미 인사했는지
+let nightReturnFocus = null;
+
+function nightDismissed(k) {
+  try { return localStorage.getItem(NIGHT_KEY + (k || todayKey())) === '1'; } catch (e) { return false; }
+}
+function nightDismiss(k) {
+  try { localStorage.setItem(NIGHT_KEY + (k || todayKey()), '1'); } catch (e) { /* 사생활 모드 등 */ }
+}
+function nightRemaining(k) {
+  k = k || todayKey();
+  return duesFor(k).filter(r => !isChecked(k, r.id));
+}
+
+function renderNightPopup(remaining) {
+  $('#nightTitle').textContent = '오늘 루틴 ' + remaining.length + '개 남았어요!';
+  const chips = remaining.slice(0, 3).map(r =>
+    '<li class="night__chip"><i style="background:' + tint(r.color) + '">' + r.emoji + '</i><span>' + esc(r.name) + '</span></li>'
+  );
+  if (remaining.length > 3) {
+    chips.push('<li class="night__chip night__chip--more">+ ' + (remaining.length - 3) + '개 더</li>');
+  }
+  $('#nightChips').innerHTML = chips.join('');
+}
+
+function checkEveningPopup(force) {
+  const el = $('#nightPopup');
+  if (!el || !state) return false;
+  if (!force) {
+    if (new Date().getHours() < 21) return false;      // 밤 9시 ~ 23:59
+    if (nightShown || nightDismissed()) return false;   // 오늘 밤엔 이미 인사했어요
+    if (anyModalOpen() || !$('#celebrate').hidden) return false;
+  }
+  const remaining = nightRemaining();
+  if (!remaining.length) return false;                  // 다 했으면 조용히
+  renderNightPopup(remaining);
+  if (el.hidden) {
+    nightReturnFocus = document.activeElement;
+    el.hidden = false;
+    syncScrollLock();
+    setTimeout(() => { const c = $('#nightPopup .night__card'); if (c && !el.hidden) c.focus({ preventScroll: true }); }, 80);
+  }
+  nightShown = true;
+  return true;
+}
+
+function closeNightPopup(markDismissed) {
+  const el = $('#nightPopup');
+  if (!el || el.hidden) return;
+  el.hidden = true;
+  if (markDismissed) nightDismiss();
+  syncScrollLock();
+  if (nightReturnFocus && typeof nightReturnFocus.focus === 'function') {
+    try { nightReturnFocus.focus({ preventScroll: true }); } catch (e) {}
+  }
+  nightReturnFocus = null;
+}
+
+function goFromNightPopup() {
+  const first = nightRemaining()[0];
+  closeNightPopup(false);
+  ui.just = first ? first.id : '';
+  switchTab('home');
+  if (first) {
+    const item = document.querySelector('.item[data-id="' + first.id + '"]');
+    if (item) setTimeout(() => item.scrollIntoView({ behavior: 'smooth', block: 'center' }), 160);
+  }
 }
 
 function burstConfetti() {
@@ -2514,6 +2740,10 @@ function switchTab(name) {
 }
 
 document.addEventListener('click', function (ev) {
+  if (ev.target.closest('#nightGo')) { goFromNightPopup(); return; }
+  const nightEl = ev.target.closest('[data-night]');
+  if (nightEl) { closeNightPopup(true); return; }
+
   const closeEl = ev.target.closest('[data-close]');
   if (closeEl) { closeModal(closeEl.dataset.close); return; }
 
@@ -2707,7 +2937,8 @@ $('#miniTimer').addEventListener('click', () => openModal('timerModal'));
 
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
-    if (!$('#confirmModal').hidden) closeModal('confirmModal');
+    if (!$('#nightPopup').hidden) closeNightPopup(true);
+    else if (!$('#confirmModal').hidden) closeModal('confirmModal');
     else if (!$('#editModal').hidden) closeModal('editModal');
     else if (!$('#dayModal').hidden) closeModal('dayModal');
     else if (!$('#ddayModal').hidden) closeModal('ddayModal');
@@ -2734,11 +2965,15 @@ ui.calY = now.getFullYear();
 ui.calM = now.getMonth() + 1;
 renderAll();
 
+/* 밤 9시 넘어 앱을 열었는데 남은 루틴이 있으면, 귀여운 캐릭터가 살짝 인사해요 */
+setTimeout(() => checkEveningPopup(false), 900);
+
 /* 자정이 지나면 새 날로 */
 let lastDay = todayKey();
 setInterval(() => {
   const k = todayKey();
   if (k !== lastDay) { lastDay = k; renderAll(); }
+  checkEveningPopup(false);
 }, 60000);
 
 /* 테스트·확인용 (앱 동작에는 영향 없음) */
@@ -2753,7 +2988,11 @@ window.__routine = {
   shoutPhase: shoutPhase,
   timer: T,
   ddayN: ddayN,
-  diffDays: diffDays
+  diffDays: diffDays,
+  checkEveningPopup: checkEveningPopup,
+  nightRemaining: nightRemaining,
+  nightDismissed: nightDismissed,
+  closeNightPopup: closeNightPopup
 };
 })();
 </script>
