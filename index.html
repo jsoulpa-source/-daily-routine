@@ -4,8 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>현호 님의 데일리 루틴</title>
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="icon-192.png">
 <meta name="theme-color" content="#F7F4FF">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1149,7 +1147,6 @@ const Snd = {
       this.blip(920, .11, 'square', .15);
       this.blip(1320, .13, 'square', .15, .13);
     } else if (kind === 'rest') {
-      /* 10초 휴식 / 천천히 시작 알림: 또렷한 하강 2음 ("띵-동!") */
       this.blip(880, .16, 'triangle', .2);
       this.blip(587.33, .24, 'triangle', .2, .16);
     } else {
@@ -1166,6 +1163,46 @@ function haptic(ms) {
   if (!state || !state.haptic) return;
   try { if (navigator.vibrate) navigator.vibrate(ms); } catch (e) {}
 }
+
+/* ============================================================
+   인터벌 배경 음악 (Web Audio 합성 · 외부 음원 없음)
+   ============================================================ */
+const Bgm = {
+  iv: null,
+  mode: null,
+  step: 0,
+  start(kind) {
+    if (!Snd.on || !Snd.ensure()) return;
+    if (this.mode === kind && this.iv) return;
+    this.stop();
+    this.mode = kind;
+    this.step = 0;
+    const isUp = (kind === 'sprint' || kind === 'run');
+    const ms = isUp ? 215 : 680;
+    const tick = () => {
+      if (!Snd.on || !T.running) { this.stop(); return; }
+      const s = this.step++;
+      if (isUp) {
+        const arp = [261.63, 329.63, 392.00, 523.25, 392.00, 329.63, 440.00, 392.00];
+        const bass = [130.81, 130.81, 164.81, 196.00];
+        if (s % 2 === 0) Snd.blip(145, .11, 'sine', .12, 0, 44);
+        else Snd.blip(2400, .035, 'triangle', .03);
+        if (s % 4 === 0) Snd.blip(bass[(s / 4) % bass.length], .18, 'triangle', .065);
+        Snd.blip(arp[s % arp.length], .14, 'triangle', .045);
+      } else {
+        const pad = [349.23, 440.00, 523.25, 659.25, 392.00, 493.88, 587.33, 659.25];
+        Snd.blip(pad[s % pad.length], .62, 'sine', .036);
+        if (s % 4 === 0) Snd.blip(pad[s % pad.length] * 0.5, .85, 'sine', .03);
+      }
+    };
+    tick();
+    this.iv = setInterval(tick, ms);
+  },
+  stop() {
+    if (this.iv) { clearInterval(this.iv); this.iv = null; }
+    this.mode = null;
+  }
+};
 
 /* ============================================================
    목소리 응원 (기기의 한국어 TTS · 음성이 없으면 조용히 넘어감)
@@ -1760,6 +1797,9 @@ function updateTimerUI(live) {
         T.lastIdx = p.idx;
         T.lastSec = -1;
         Snd.phase(p.seg.kind);
+        Bgm.start(p.seg.kind);
+        if (p.seg.kind === 'sprint') Voice.say('파이어!');
+        else if (p.seg.kind === 'rest') Voice.say('릴랙스!');
         haptic(p.seg.kind === 'sprint' ? 30 : 20);
       } else {
         const segs = tSegs();
@@ -1836,13 +1876,18 @@ function startTimer() {
   updateTimerButtons();
   updateTimerUI(false);
   keepAwake(true);
-  Snd.phase(phaseInfo().seg.kind);
+  const pk = phaseInfo().seg.kind;
+  Snd.phase(pk);
+  Bgm.start(pk);
+  if (pk === 'sprint') Voice.say('파이어!');
+  else if (pk === 'rest') Voice.say('릴랙스!');
 }
 function pauseTimer() {
   if (!T.running) return;
   T.elapsed = Math.min(T.total, T.base + (performance.now() - T.startTs) / 1000);
   T.running = false;
   clearInterval(T.iv); T.iv = null;
+  Bgm.stop();
   updateTimerButtons();
   updateTimerUI(false);
   updateMini();
@@ -1856,7 +1901,9 @@ function resetTimer() {
   T.base = 0;
   T.lastIdx = -1;
   T.lastSec = -1;
+  T.lastCueIdx = -1;
   clearInterval(T.iv); T.iv = null;
+  Bgm.stop();
   updateTimerButtons();
   updateTimerUI(false);
   hideMini();
@@ -1872,6 +1919,7 @@ function timerTick() {
 function finishTimer() {
   T.running = false;
   clearInterval(T.iv); T.iv = null;
+  Bgm.stop();
   T.elapsed = T.total;
   T.finished = true;
   updateTimerButtons();
@@ -2402,15 +2450,15 @@ $('#soundBtn').addEventListener('click', () => {
   Snd.on = state.sound;
   save();
   renderHeader();
-  if (state.sound) { Snd.ensure(); Snd.pop(); toast('소리 켜짐'); }
-  else { Snd.on = false; Voice.stop(); toast('소리 꺼짐'); }
+  if (state.sound) { Snd.ensure(); Snd.pop(); if (T.running) Bgm.start(phaseInfo().seg.kind); toast('소리 켜짐'); }
+  else { Snd.on = false; Bgm.stop(); Voice.stop(); toast('소리 꺼짐'); }
 });
 $('#soundToggle').addEventListener('change', e => {
   state.sound = e.target.checked;
   Snd.on = state.sound;
   save();
   renderHeader();
-  if (state.sound) Snd.pop(); else Voice.stop();
+  if (state.sound) { Snd.pop(); if (T.running) Bgm.start(phaseInfo().seg.kind); } else { Bgm.stop(); Voice.stop(); }
 });
 $('#hapticToggle').addEventListener('change', e => {
   state.haptic = e.target.checked;
@@ -2589,10 +2637,8 @@ window.__routine = {
 </script>
 <noscript><p style="padding:20px;text-align:center">이 앱을 쓰려면 자바스크립트를 켜 주세요.</p></noscript>
 <script>
-if ('serviceWorker' in navigator && location.protocol === 'https:') {
-  window.addEventListener('load', function(){
-    navigator.serviceWorker.register('sw.js').catch(function(){});
-  });
+if (location.protocol === 'https:' && 'serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
 }
 </script>
 </body>
