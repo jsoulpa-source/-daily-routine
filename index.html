@@ -1680,6 +1680,7 @@ const T = {
   iv: null,
   lastIdx: -1,
   lastSec: -1,
+  lastCueIdx: -1,
   wake: null
 };
 
@@ -1761,7 +1762,15 @@ function updateTimerUI(live) {
         Snd.phase(p.seg.kind);
         haptic(p.seg.kind === 'sprint' ? 30 : 20);
       } else {
-        const pLeft = Math.ceil(p.seg.len - p.offset);
+        const segs = tSegs();
+        const nextSeg = segs[p.idx + 1];
+        const pRem = p.seg.len - p.offset;
+        if (pRem <= 5.2 && pRem > 3.2 && T.lastCueIdx !== p.idx) {
+          T.lastCueIdx = p.idx;
+          if (nextSeg) Voice.say(nextSeg.kind === 'sprint' ? '잠시 후 버닝 타임입니다!' : '잠시 후 쉬는 시간입니다!');
+          else Voice.say('조금만 더, 곧 끝나요!');
+        }
+        const pLeft = Math.ceil(pRem);
         if (pLeft <= 3 && pLeft > 0 && pLeft !== T.lastSec) {
           T.lastSec = pLeft;
           Snd.tick();
@@ -1821,6 +1830,7 @@ function startTimer() {
   T.running = true;
   T.lastIdx = phaseInfo().idx;
   T.lastSec = -1;
+  T.lastCueIdx = -1;
   clearInterval(T.iv);
   T.iv = setInterval(timerTick, 120);
   updateTimerButtons();
