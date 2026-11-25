@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="데일리 루틴">
 <meta name="description" content="허벅지·종아리 운동부터 영어 공부, 약 먹기까지 — 현호 님의 매일 루틴 체크 앱">
-<meta name="app-build" content="hyunho-welcome-2026-11-25">
+<meta name="app-build" content="hyunho-voice-natural-2026-11-25">
 <style>
 /* ================= 기본 ================= */
 :root{
@@ -1665,8 +1665,8 @@ const Voice = {
       const u = new window.SpeechSynthesisUtterance(text);
       u.lang = 'ko-KR';
       if (this.ko) u.voice = this.ko;
-      u.rate = 1.04;      // 조금 생기 있게
-      u.pitch = 1.12;     // 밝고 다정하게
+      u.rate = 0.98;      // 자연스러운 기본 속도
+      u.pitch = 1.0;      // 인위적인 높낮이 없이 담백하게
       u.volume = 0.95;
       window.speechSynthesis.speak(u);
       return true;
