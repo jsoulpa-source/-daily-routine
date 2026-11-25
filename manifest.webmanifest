@@ -1,0 +1,17 @@
+{
+  "name": "현호 님의 데일리 루틴",
+  "short_name": "데일리 루틴",
+  "description": "운동·영어·약 먹기까지 매일 루틴 체크",
+  "lang": "ko",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F7F4FF",
+  "theme_color": "#F7F4FF",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
