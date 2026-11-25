@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="데일리 루틴">
 <meta name="description" content="허벅지·종아리 운동부터 영어 공부, 약 먹기까지 — 현호 님의 매일 루틴 체크 앱">
-<meta name="app-build" content="hyunho-voice-2026-11-25">
+<meta name="app-build" content="hyunho-welcome-2026-11-25">
 <style>
 /* ================= 기본 ================= */
 :root{
@@ -61,13 +61,13 @@ body.no-scroll{overflow:hidden}
 }
 .topbar__row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
 .topbar__id{display:flex;align-items:center;gap:10px;min-width:0}
-.topbar__ava{position:relative;flex:none;width:46px;height:46px}
+.topbar__ava{position:relative;flex:none;width:64px;height:64px}
 .topbar__ava img{
   display:block;width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:center top;background:#EFE7FF;
   border:2px solid #fff;box-shadow:0 0 0 2px #E7DBFF,0 6px 14px rgba(120,88,214,.22);
   animation:eveFloat 5.4s ease-in-out infinite;
 }
-.topbar__ava .eve-spark--a{width:9px;height:9px;top:-2px;right:-1px}
+.topbar__ava .eve-spark--a{width:11px;height:11px;top:-3px;right:-2px}
 .date{font-size:12.5px;font-weight:700;color:var(--green-d);letter-spacing:.01em}
 .topbar h1{font-size:19px;font-weight:800;margin-top:3px}
 .topbar__actions{display:flex;align-items:center;gap:7px;flex:none;padding-top:2px}
@@ -479,6 +479,50 @@ body.no-scroll{overflow:hidden}
   .night__title{font-size:14.5px}
 }
 
+/* ================= 입장 환영 팝업 ================= */
+.welcome{position:fixed;inset:0;z-index:88;display:flex;align-items:center;justify-content:center;padding:22px 18px;animation:fade .24s ease both}
+.welcome__scrim{
+  position:absolute;inset:0;
+  background:radial-gradient(120% 84% at 50% 30%,rgba(168,132,255,.26) 0%,rgba(48,32,92,.46) 100%);
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+}
+.welcome__card{
+  position:relative;width:100%;max-width:328px;padding:24px 18px 16px;border-radius:28px;text-align:center;
+  background:linear-gradient(180deg,#FFFFFF 0%,#FDF8FF 56%,#F7EDFF 100%);
+  border:1px solid #EDE2FF;box-shadow:0 28px 68px rgba(52,35,102,.32);
+  animation:welcomeIn .54s cubic-bezier(.2,1.5,.4,1) both;
+}
+.welcome__card::before{
+  content:'';position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;
+  background:radial-gradient(92% 58% at 18% 0%,rgba(202,180,255,.3),rgba(255,255,255,0) 72%);
+}
+@keyframes welcomeIn{from{transform:translateY(22px) scale(.88);opacity:0}to{transform:none;opacity:1}}
+.welcome__card:focus{outline:none}
+.welcome__x{
+  position:absolute;top:9px;right:9px;z-index:2;width:30px;height:30px;border-radius:11px;
+  display:grid;place-items:center;font-size:13px;font-weight:800;color:#8E86A8;background:#F5F1FF;
+  transition:transform .14s,background .2s;
+}
+.welcome__x:active{transform:scale(.92);background:#EDE6FF}
+.welcome__ava{position:relative;width:108px;height:108px;margin:2px auto 0}
+.welcome__ava::before{
+  content:'';position:absolute;inset:-15px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle at 50% 36%,rgba(186,158,255,.62) 0%,rgba(255,186,220,.30) 56%,rgba(255,255,255,0) 76%);
+  filter:blur(2px);animation:welcomeGlow 3.4s ease-in-out infinite;
+}
+@keyframes welcomeGlow{0%,100%{opacity:.72;transform:scale(1)}50%{opacity:1;transform:scale(1.07)}}
+.welcome__ava img{
+  position:relative;display:block;width:100%;height:100%;border-radius:50%;
+  object-fit:cover;object-position:center top;background:#EFE7FF;
+  border:3px solid #fff;box-shadow:0 0 0 3px #E3D3FF,0 16px 30px rgba(110,70,190,.3);
+  animation:welcomeBounce 2.4s cubic-bezier(.3,1.5,.4,1) infinite;
+}
+@keyframes welcomeBounce{0%,100%{transform:translateY(0) scale(1)}30%{transform:translateY(-7px) scale(1.035)}56%{transform:translateY(2px) scale(.994)}}
+.welcome__kicker{position:relative;font-size:11px;font-weight:800;color:#8B6CF0;letter-spacing:.02em;margin-top:20px}
+.welcome__title{position:relative;font-size:19.5px;font-weight:900;letter-spacing:-.03em;line-height:1.34;margin-top:5px;word-break:keep-all}
+.welcome__msg{position:relative;font-size:12.8px;font-weight:700;color:var(--ink2);line-height:1.6;margin-top:7px;word-break:keep-all}
+.welcome__btn{position:relative;margin-top:15px;width:100%;padding:15px 18px;border-radius:17px;font-size:15px}
+
 /* ================= 폼 ================= */
 .field{margin-top:14px}
 .field > label{display:block;font-size:12px;font-weight:800;color:var(--ink2);margin-bottom:6px}
@@ -561,6 +605,15 @@ body.no-scroll{overflow:hidden}
 .confirm__btns{display:flex;gap:8px;margin-top:16px}
 .confirm__btns .btn{flex:1}
 
+/* ================= 작은 화면 ================= */
+@media (max-width:360px){
+  .topbar__ava{width:54px;height:54px}
+  .topbar h1{font-size:17px}
+  .topbar__actions{padding-top:0}
+  .welcome__ava{width:96px;height:96px}
+  .welcome__title{font-size:17.5px}
+}
+
 /* ================= 데스크톱 ================= */
 @media (min-width:520px){
   .app{padding-bottom:120px}
@@ -578,7 +631,7 @@ body.no-scroll{overflow:hidden}
     <div class="topbar__row">
       <div class="topbar__id">
         <span class="topbar__ava">
-          <img data-eve-avatar alt="" width="46" height="46" decoding="async">
+          <img data-eve-avatar alt="" width="64" height="64" decoding="async">
           <i class="eve-spark eve-spark--a" aria-hidden="true"></i>
         </span>
         <div>
@@ -930,6 +983,24 @@ body.no-scroll{overflow:hidden}
     <h2>오늘 루틴 올클리어!</h2>
     <p id="celebMsg">연속 기록이 이어지고 있어요.</p>
     <button class="btn btn--primary" id="celebBtn">좋아요!</button>
+  </div>
+</div>
+
+<!-- ============ 입장 환영 팝업 (귀여운 캐릭터 · 앱을 열면 한 번) ============ -->
+<div class="welcome" id="welcomePopup" hidden>
+  <div class="welcome__scrim" data-welcome="greet"></div>
+  <div class="welcome__card" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle" aria-describedby="welcomeMsg" tabindex="-1">
+    <button class="welcome__x" type="button" data-welcome="greet" aria-label="환영 인사 닫기">✕</button>
+    <div class="welcome__ava">
+      <img data-eve-avatar alt="연보라 빛 속에서 반갑게 웃는 이비" width="108" height="108" decoding="async">
+      <i class="eve-spark eve-spark--a" aria-hidden="true"></i>
+      <i class="eve-spark eve-spark--b" aria-hidden="true"></i>
+      <i class="eve-spark eve-spark--c" aria-hidden="true"></i>
+    </div>
+    <p class="welcome__kicker">💜 오늘도 만나서 반가워요</p>
+    <h2 class="welcome__title" id="welcomeTitle">현호 님, 어서 오세요!</h2>
+    <p class="welcome__msg" id="welcomeMsg">오늘도 기분 좋게 시작해 볼까요? 이비가 옆에서 같이 할게요 💜</p>
+    <button class="btn btn--primary welcome__btn" type="button" id="welcomeStart">오늘 루틴 시작! ✨</button>
   </div>
 </div>
 
@@ -1298,8 +1369,68 @@ const Snd = {
       o.start(t0); o.stop(t0 + dur + 0.03);
     } catch (e) {}
   },
-  pop() { this.blip(540, .09, 'sine', .16, 0, 900); this.blip(1180, .07, 'triangle', .06, .035); },
-  uncheck() { this.blip(430, .1, 'sine', .09, 0, 300); },
+  /* 뽀작뽀작 — 물방울이 톡 튀는 귀여운 버블 소리
+     아주 짧게 위로 튀었다가 사르르 내려오는 사인파 + 마림바처럼 반짝이는 배음 */
+  bubble(freq, dur, vol, delay, upTo) {
+    const ctx = this.ensure();
+    if (!ctx) return;
+    try {
+      const t0 = ctx.currentTime + (delay || 0);
+      const d = dur || .085;
+      const f = freq || 560;
+      const o = ctx.createOscillator();
+      const o2 = ctx.createOscillator();
+      const g = ctx.createGain();
+      const g2 = ctx.createGain();
+      const v = vol || .12;
+      o.type = 'sine';
+      o.frequency.setValueAtTime(f * 0.88, t0);
+      o.frequency.exponentialRampToValueAtTime(f * (upTo || 1.95), t0 + d * 0.34);
+      o.frequency.exponentialRampToValueAtTime(f * 1.16, t0 + d);
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(v, t0 + 0.009);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + d);
+      o2.type = 'triangle';
+      o2.frequency.setValueAtTime(f * 2.01, t0);
+      g2.gain.setValueAtTime(0.0001, t0);
+      g2.gain.exponentialRampToValueAtTime(v * 0.26, t0 + 0.006);
+      g2.gain.exponentialRampToValueAtTime(0.0001, t0 + d * 0.6);
+      o.connect(g); g.connect(ctx.destination);
+      o2.connect(g2); g2.connect(ctx.destination);
+      o.start(t0); o.stop(t0 + d + 0.02);
+      o2.start(t0); o2.stop(t0 + d + 0.02);
+    } catch (e) {}
+  },
+  /* 체크할 때: 뽀 + 작! 하고 두 번 톡 튀는 소리(음높이는 조금씩 달라져요) */
+  pop() {
+    const f = 505 + Math.random() * 130;
+    this.bubble(f, .078, .17, 0);
+    this.bubble(f * 1.62, .058, .12, .055);
+    this.blip(f * 3.86, .036, 'sine', .032, .105);
+  },
+  /* 체크 해제: 톡 빠지는 느낌 */
+  uncheck() {
+    const f = 432 + Math.random() * 56;
+    this.bubble(f, .095, .08, 0, 1.34);
+    this.bubble(f * 0.74, .07, .042, .055, 1.2);
+  },
+  /* 탭을 바꿀 때: 뽀용~ 한 방울 */
+  tap() {
+    const f = 648 + Math.random() * 168;
+    this.bubble(f, .064, .1, 0);
+    this.bubble(f * 1.52, .046, .058, .045);
+  },
+  /* 체크와 같은 이름으로도 부를 수 있게 */
+  check() { this.pop(); },
+  /* 앱에 들어올 때: 뽀 · 용 · ~ 반짝이며 올라가는 인사 소리 */
+  welcome() {
+    const f = 512;
+    this.bubble(f, .12, .17, 0);
+    this.bubble(f * 1.98, .1, .13, .085);
+    this.bubble(f * 2.96, .09, .09, .165);
+    this.bubble(f * 3.94, .15, .068, .245);
+    this.blip(f * 4.62, .3, 'sine', .035, .30);
+  },
   tick() { this.blip(1000, .05, 'square', .045); },
   phase(kind) {
     if (kind === 'sprint') {
@@ -1497,18 +1628,35 @@ const Voice = {
   ko: null,
   lastCheer: -1,
   lastAt: 0,
+  quietUntil: 0,     // 인사말이 끝날 때까지 끼어들지 않게
   init() {
     if (!this.supported) return;
     const pick = () => {
       try {
         const vs = window.speechSynthesis.getVoices() || [];
-        this.ko = vs.find(v => /^ko[-_]?KR$/i.test(v.lang)) || vs.find(v => /^ko/i.test(v.lang)) || null;
+        const ko = vs.filter(v => /^ko([-_]|$)/i.test(v.lang || ''));
+        if (!ko.length) { this.ko = null; return; }
+        /* 이비 목소리와 가장 비슷한 후보를 고른다 — 밝고 자연스러운 한국어 여성 음성 우선 */
+        const score = v => {
+          const n = ((v.name || '') + ' ' + (v.voiceURI || '')).toLowerCase();
+          let s = 0;
+          if (/yuna|유나|seohyun|서현|sunhi|선희|sora|소라|nari|나래|jiyeon|지연|goun|고운|heami|해미|kyuri|규리|goeun|지현|jihyun/.test(n)) s += 60;
+          if (/natural|neural|premium|enhanced|wavenet/.test(n)) s += 26;
+          if (/google/.test(n)) s += 22;
+          if (/female|여성/.test(n)) s += 14;
+          if (/male|남성|injoon|인준|junwoo|준우|hyunsu|현수/.test(n)) s -= 70;
+          if (/^ko[-_]?kr$/i.test(v.lang)) s += 12;
+          if (v.localService === false) s += 6;      // 클라우드 음성은 대체로 더 매끄러움
+          if (v.default) s += 1;
+          return s;
+        };
+        this.ko = ko.slice().sort((a, b) => score(b) - score(a))[0] || null;
       } catch (e) {}
     };
     pick();
-    if (!this.ko) {
-      try { window.speechSynthesis.onvoiceschanged = pick; } catch (e) {}
-    }
+    /* 크롬은 처음엔 빈 목록을 주고 나중에 채우므로, 목록이 바뀔 때마다 다시 고른다 */
+    try { window.speechSynthesis.onvoiceschanged = pick; } catch (e) {}
+    try { window.speechSynthesis.addEventListener('voiceschanged', pick); } catch (e) {}
   },
   say(text) {
     if (!this.supported || !state || !state.voice || !state.sound) return false;
@@ -1517,15 +1665,22 @@ const Voice = {
       const u = new window.SpeechSynthesisUtterance(text);
       u.lang = 'ko-KR';
       if (this.ko) u.voice = this.ko;
-      u.rate = 1.02;
-      u.pitch = 1.06;
-      u.volume = 0.92;
+      u.rate = 1.04;      // 조금 생기 있게
+      u.pitch = 1.12;     // 밝고 다정하게
+      u.volume = 0.95;
       window.speechSynthesis.speak(u);
       return true;
     } catch (e) { return false; }
   },
+  /* 앱에 들어올 때 하는 인사 — 잠시 응원 멘트가 끼어들지 않도록 조용히 시켜 둔다 */
+  welcome(text) {
+    this.quietUntil = Date.now() + 4200;
+    this.lastAt = Date.now();
+    return this.say(text || '현호 님, 어서 오세요! 오늘도 기분 좋게 시작해 볼까요?');
+  },
   cheer() {
     const now = Date.now();
+    if (now < this.quietUntil) return;
     if (now - this.lastAt < 1600) return;
     let i = Math.floor(Math.random() * CHEERS.length);
     if (i === this.lastCheer) i = (i + 1) % CHEERS.length;
@@ -1568,7 +1723,7 @@ function askConfirm(title, msg, yesLabel) {
    모달 열고 닫기
    ============================================================ */
 function anyModalOpen() {
-  return ['timerModal', 'dayModal', 'editModal', 'ddayModal', 'confirmModal', 'nightPopup'].some(id => {
+  return ['timerModal', 'dayModal', 'editModal', 'ddayModal', 'confirmModal', 'nightPopup', 'welcomePopup'].some(id => {
     const el = document.getElementById(id);
     return el && !el.hidden;
   });
@@ -1990,6 +2145,68 @@ function goFromNightPopup() {
     const item = document.querySelector('.item[data-id="' + first.id + '"]');
     if (item) setTimeout(() => item.scrollIntoView({ behavior: 'smooth', block: 'center' }), 160);
   }
+}
+
+/* ============================================================
+   입장 환영 팝업 — 앱을 열면 이비가 먼저 반갑게 인사해요
+   · 실행(페이지 로드)할 때 한 번만, 밤 인사 팝업과는 겹치지 않게
+   · "오늘 루틴 시작!" 버튼(또는 닫기)을 누르면 그 터치로 오디오를 열고
+     뽀용~ 소리와 함께 한국어 인사말을 들려줘요
+   ============================================================ */
+let welcomeShown = false;
+const WELCOME_VOICE_TEXT = '현호 님, 어서 오세요! 오늘도 기분 좋게 시작해 볼까요?';
+
+/* 밤 9시가 넘었는데 남은 루틴이 있으면 밤 인사 팝업이 먼저 와요 — 그러면 환영 팝업은 쉬어요 */
+function nightWillShow() {
+  if (!state) return false;
+  if (nightShown || nightDismissed()) return false;
+  if (new Date().getHours() < 21) return false;
+  return nightRemaining().length > 0;
+}
+
+/* 안드로이드 크롬의 자동재생 제한: 사용자가 직접 누른 순간에 오디오를 깨워 둔다 */
+function unlockAudio() {
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (AC && !Snd.ctx) Snd.ctx = new AC();
+    if (Snd.ctx && Snd.ctx.state === 'suspended') Snd.ctx.resume();
+  } catch (e) {}
+  try { HVoice.prepare(); } catch (e) {}
+  try { if (Voice.supported) window.speechSynthesis.resume(); } catch (e) {}
+}
+
+function playWelcomeSound() {
+  if (!state) return false;
+  if (T.running) return false;        // 타이머 중에는 목소리로 방해하지 않아요
+  if (!state.sound) return false;     // 소리를 꺼 두셨으면 조용히
+  Snd.on = true;
+  if (!Snd.ensure()) return false;
+  Snd.welcome();                      // 뽀·용·~ 반짝
+  if (state.voice) setTimeout(() => { if (state.voice && state.sound) Voice.welcome(WELCOME_VOICE_TEXT); }, 320);
+  return true;
+}
+
+function openWelcome() {
+  const el = $('#welcomePopup');
+  if (!el || !el.hidden || welcomeShown) return false;
+  welcomeShown = true;
+  el.hidden = false;
+  syncScrollLock();
+  setTimeout(() => {
+    const c = $('#welcomePopup .welcome__card');
+    if (c && !el.hidden) { try { c.focus({ preventScroll: true }); } catch (e) {} }
+  }, 90);
+  return true;
+}
+
+function closeWelcome(greet) {
+  const el = $('#welcomePopup');
+  if (!el || el.hidden) return false;
+  el.hidden = true;
+  syncScrollLock();
+  unlockAudio();
+  if (greet) playWelcomeSound();
+  return true;
 }
 
 function burstConfetti() {
@@ -2737,10 +2954,12 @@ function resetDday(id) {
    이벤트
    ============================================================ */
 function switchTab(name) {
+  const changed = ui.tab !== name;
   ui.tab = name;
   $$('.page').forEach(p => p.classList.toggle('is-on', p.id === 'page-' + name));
   $$('.tabbtn').forEach(b => b.classList.toggle('is-on', b.dataset.tab === name));
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (changed) { Snd.tap(); haptic(6); }   // 뽀용~ 하고 넘어가는 소리
   if (name === 'stats') renderStats();
   if (name === 'edit') renderEdit();
   if (name === 'dday') renderDday();
@@ -2749,6 +2968,10 @@ function switchTab(name) {
 }
 
 document.addEventListener('click', function (ev) {
+  if (ev.target.closest('#welcomeStart')) { closeWelcome(true); return; }
+  const welcomeEl = ev.target.closest('[data-welcome]');
+  if (welcomeEl) { closeWelcome(true); return; }
+
   if (ev.target.closest('#nightGo')) { goFromNightPopup(); return; }
   const nightEl = ev.target.closest('[data-night]');
   if (nightEl) { closeNightPopup(true); return; }
@@ -2946,7 +3169,8 @@ $('#miniTimer').addEventListener('click', () => openModal('timerModal'));
 
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
-    if (!$('#nightPopup').hidden) closeNightPopup(true);
+    if (!$('#welcomePopup').hidden) closeWelcome(true);
+    else if (!$('#nightPopup').hidden) closeNightPopup(true);
     else if (!$('#confirmModal').hidden) closeModal('confirmModal');
     else if (!$('#editModal').hidden) closeModal('editModal');
     else if (!$('#dayModal').hidden) closeModal('dayModal');
@@ -2978,6 +3202,13 @@ renderAll();
 /* 밤 9시 넘어 앱을 열었는데 남은 루틴이 있으면, 귀여운 캐릭터가 살짝 인사해요 */
 setTimeout(() => checkEveningPopup(false), 900);
 
+/* 앱에 들어오면 이비가 먼저 반갑게 인사해요 (밤 인사 팝업이 뜰 때는 겹치지 않게 쉬어요) */
+setTimeout(() => {
+  if (nightWillShow()) return;
+  if (anyModalOpen() || !$('#celebrate').hidden) return;
+  openWelcome();
+}, 520);
+
 /* 자정이 지나면 새 날로 */
 let lastDay = todayKey();
 setInterval(() => {
@@ -2995,6 +3226,8 @@ window.__routine = {
   streak: streak,
   voice: Voice,
   hvoice: HVoice,
+  snd: Snd,
+  welcome: { open: openWelcome, close: closeWelcome, play: playWelcomeSound, unlock: unlockAudio, nightWillShow: nightWillShow, get shown() { return welcomeShown; } },
   shoutPhase: shoutPhase,
   timer: T,
   ddayN: ddayN,
