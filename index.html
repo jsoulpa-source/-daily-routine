@@ -1145,9 +1145,16 @@ const Snd = {
   uncheck() { this.blip(430, .1, 'sine', .09, 0, 300); },
   tick() { this.blip(1000, .05, 'square', .045); },
   phase(kind) {
-    if (kind === 'sprint') { this.blip(900, .09, 'square', .085); this.blip(1200, .09, 'square', .085, .12); }
-    else if (kind === 'rest') { this.blip(520, .14, 'sine', .09); }
-    else { this.blip(760, .12, 'triangle', .08); }
+    if (kind === 'sprint') {
+      this.blip(920, .11, 'square', .15);
+      this.blip(1320, .13, 'square', .15, .13);
+    } else if (kind === 'rest') {
+      /* 10초 휴식 / 천천히 시작 알림: 또렷한 하강 2음 ("띵-동!") */
+      this.blip(880, .16, 'triangle', .2);
+      this.blip(587.33, .24, 'triangle', .2, .16);
+    } else {
+      this.blip(760, .14, 'triangle', .14);
+    }
   },
   chime() { [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => this.blip(f, .55, 'sine', .11, i * 0.1)); },
   fanfare() {
@@ -1750,8 +1757,15 @@ function updateTimerUI(live) {
     if (T.mode !== 'countdown') {
       if (T.lastIdx !== p.idx && T.elapsed > 0.05) {
         T.lastIdx = p.idx;
+        T.lastSec = -1;
         Snd.phase(p.seg.kind);
-        haptic(p.seg.kind === 'sprint' ? 30 : 12);
+        haptic(p.seg.kind === 'sprint' ? 30 : 20);
+      } else {
+        const pLeft = Math.ceil(p.seg.len - p.offset);
+        if (pLeft <= 3 && pLeft > 0 && pLeft !== T.lastSec) {
+          T.lastSec = pLeft;
+          Snd.tick();
+        }
       }
     } else {
       const secLeft = Math.ceil(left);
@@ -1812,7 +1826,7 @@ function startTimer() {
   updateTimerButtons();
   updateTimerUI(false);
   keepAwake(true);
-  Snd.phase('rest');
+  Snd.phase(phaseInfo().seg.kind);
 }
 function pauseTimer() {
   if (!T.running) return;
