@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="데일리 루틴">
 <meta name="description" content="허벅지·종아리 운동부터 영어 공부, 약 먹기까지 — 현호 님의 매일 루틴 체크 앱">
-<meta name="app-build" content="hyunho-dressup-dance-2026-11-26">
+<meta name="app-build" content="hyunho-big-heroine-2026-11-26">
 <style>
 /* ================= 기본 ================= */
 :root{
@@ -567,7 +567,7 @@ body.no-scroll{overflow:hidden}
 }
 .welcome__card{
   position:relative;width:100%;max-width:440px;padding:14px 18px 16px;border-radius:28px;text-align:center;
-  max-height:calc(100dvh - 32px);overflow-y:auto;-webkit-overflow-scrolling:touch;
+  max-height:calc(100dvh - 32px);overflow-y:auto;-webkit-overflow-scrolling:touch;scroll-behavior:smooth;
   background:linear-gradient(180deg,#FFFFFF 0%,#FDF8FF 56%,#F7EDFF 100%);
   border:1px solid #EDE2FF;box-shadow:0 28px 68px rgba(52,35,102,.32);
   animation:welcomeIn .54s cubic-bezier(.2,1.5,.4,1) both;
@@ -599,42 +599,72 @@ body.no-scroll{overflow:hidden}
 }
 @keyframes welcomeBounce{0%,100%{transform:translateY(0) scale(1)}30%{transform:translateY(-7px) scale(1.035)}56%{transform:translateY(2px) scale(.994)}}
 
-/* 전신 댄스 무대 */
+/* 전신 무대 — 크게, 가운데, 우아하게 */
 .welcome__stage{
-  position:relative;margin:2px auto 0;width:100%;height:clamp(228px,30dvh,278px);
-  border-radius:22px;overflow:hidden;isolation:isolate;
+  position:relative;margin:6px auto 0;width:100%;height:clamp(340px,46dvh,400px);
+  border-radius:24px;overflow:hidden;isolation:isolate;
   background:
     radial-gradient(80% 58% at 50% 16%,#FFFFFF 0%,rgba(247,243,255,0) 66%),
     linear-gradient(180deg,#FAF7FF 0%,#F3EDFC 58%,#EAE1F7 100%);
   border:1px solid #EDE2FF;
   box-shadow:inset 0 -20px 28px -20px rgba(120,88,214,.30);
 }
+/* 무대 뒤 은은한 오라(발광) */
 .welcome__stage::before{
-  content:'';position:absolute;left:50%;bottom:6%;width:160px;height:160px;transform:translateX(-50%);
-  border-radius:50%;background:radial-gradient(circle at 50% 50%,rgba(190,166,255,.46) 0%,rgba(213,196,255,.20) 58%,rgba(255,255,255,0) 76%);
-  filter:blur(3px);animation:welcomeGlow 3.4s ease-in-out infinite;
+  content:'';position:absolute;left:50%;bottom:2%;z-index:0;width:86%;height:78%;transform:translateX(-50%);
+  border-radius:50%;
+  background:radial-gradient(ellipse at 50% 64%,rgba(188,162,255,.52) 0%,rgba(214,192,255,.30) 46%,rgba(255,206,236,.14) 66%,rgba(255,255,255,0) 80%);
+  filter:blur(9px);animation:eveAura 3.8s ease-in-out infinite;
 }
+/* 바닥 그림자 */
 .welcome__stage::after{
-  content:'';position:absolute;left:50%;bottom:5px;width:54%;height:14px;transform:translateX(-50%);
-  border-radius:50%;background:radial-gradient(ellipse,rgba(110,70,190,.28) 0%,rgba(110,70,190,0) 74%);filter:blur(2px);
+  content:'';position:absolute;left:50%;bottom:4px;z-index:2;width:62%;height:16px;transform:translateX(-50%);
+  border-radius:50%;background:radial-gradient(ellipse,rgba(110,70,190,.26) 0%,rgba(110,70,190,0) 74%);filter:blur(2px);
+}
+/* 위에서 내려오는 스포트라이트 */
+.stage-spot{
+  position:absolute;left:50%;top:0;z-index:0;width:86%;height:100%;transform:translateX(-50%);pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.92) 0%,rgba(255,244,255,.62) 34%,rgba(224,204,255,.30) 72%,rgba(196,168,255,0) 100%);
+  clip-path:polygon(50% 0%,86% 100%,14% 100%);
+  filter:blur(14px);opacity:.72;animation:eveSpot 5.6s ease-in-out infinite;
+}
+/* 지나가는 빛의 결 */
+.stage-shimmer{
+  position:absolute;inset:-25% -60%;z-index:0;pointer-events:none;opacity:0;
+  background:linear-gradient(104deg,rgba(255,255,255,0) 40%,rgba(255,255,255,.62) 50%,rgba(228,206,255,.34) 56%,rgba(255,255,255,0) 66%);
+  animation:eveShimmer 5.6s ease-in-out infinite;
+}
+@keyframes eveAura{
+  0%,100%{opacity:.66;transform:translateX(-50%) scale(.97)}
+  50%    {opacity:1;transform:translateX(-50%) scale(1.05)}
+}
+@keyframes eveSpot{
+  0%,100%{opacity:.60}
+  50%    {opacity:.86}
+}
+@keyframes eveShimmer{
+  0%      {opacity:0;transform:translateX(-46%)}
+  58%     {opacity:0;transform:translateX(-20%)}
+  70%     {opacity:.62;transform:translateX(6%)}
+  84%     {opacity:0;transform:translateX(34%)}
+  100%    {opacity:0;transform:translateX(46%)}
 }
 .welcome__stage img{
   position:relative;z-index:1;display:block;height:100%;width:auto;max-width:100%;margin:0 auto;
   object-fit:contain;object-position:center bottom;
-  filter:drop-shadow(0 12px 16px rgba(110,70,190,.18));
-  transform-origin:50% 94%;animation:eveDance 2.9s cubic-bezier(.4,0,.5,1) infinite;will-change:transform;
+  filter:drop-shadow(0 14px 20px rgba(110,70,190,.20));
+  transform-origin:50% 95%;animation:eveIdle 3.8s ease-in-out infinite;will-change:transform;
+  backface-visibility:hidden;
   -webkit-mask-image:linear-gradient(90deg,rgba(0,0,0,0) 0%,#000 13%,#000 87%,rgba(0,0,0,0) 100%);
   mask-image:linear-gradient(90deg,rgba(0,0,0,0) 0%,#000 13%,#000 87%,rgba(0,0,0,0) 100%);
 }
-@keyframes eveDance{
-  0%  {transform:translateY(0) rotate(-1.4deg) skewX(0deg) scale(1)}
-  12% {transform:translateY(-8px) rotate(1.8deg) skewX(1.2deg) scale(1.012)}
-  26% {transform:translateY(-1px) rotate(2.6deg) skewX(1.6deg) scale(.998)}
-  38% {transform:translateY(-7px) rotate(-1.6deg) skewX(-1deg) scale(1.01)}
-  52% {transform:translateY(0) rotate(-2.4deg) skewX(-1.4deg) scale(1)}
-  66% {transform:translateY(-9px) rotate(1.4deg) skewX(1deg) scale(1.014)}
-  80% {transform:translateY(-2px) rotate(2.1deg) skewX(1.2deg) scale(1.002)}
-  100%{transform:translateY(0) rotate(-1.4deg) skewX(0deg) scale(1)}
+/* 우아한 아이돌 숨쉬기 + 아주 작은 좌우 흔들림 (발끝을 축으로) */
+@keyframes eveIdle{
+  0%  {transform:scale(1) rotate(0deg)}
+  25% {transform:scale(1.010) rotate(.34deg)}
+  50% {transform:scale(1.018) rotate(.6deg)}
+  75% {transform:scale(1.010) rotate(.26deg)}
+  100%{transform:scale(1) rotate(0deg)}
 }
 .stage-vig{
   position:absolute;inset:-1px;z-index:3;pointer-events:none;border-radius:inherit;
@@ -659,9 +689,19 @@ body.no-scroll{overflow:hidden}
 .welcome__title{position:relative;font-size:18.5px;font-weight:900;letter-spacing:-.03em;line-height:1.3;margin-top:3px;word-break:keep-all}
 .welcome__msg{position:relative;font-size:12.2px;font-weight:700;color:var(--ink2);line-height:1.5;margin-top:5px;word-break:keep-all}
 .welcome__btn{position:relative;margin-top:11px;width:100%;padding:14px 18px;border-radius:17px;font-size:15px}
+.welcome__jump{
+  position:relative;display:flex;align-items:center;justify-content:center;gap:5px;width:100%;margin-top:7px;padding:9px 10px;
+  border-radius:13px;font-size:12px;font-weight:800;color:#6B4BD6;background:#F7F2FF;border:1px solid #EBE1FF;
+  transition:background .18s,transform .14s;
+}
+.welcome__jump:active{transform:scale(.985);background:#EFE7FF}
 
-/* 👗 옷장 */
-.wardrobe{position:relative;margin-top:9px;text-align:left}
+/* 👗 옷장 — '오늘 루틴 시작' 버튼 아래 (아래로 스크롤해서 고른다) */
+.wardrobe{position:relative;margin-top:14px;padding-top:12px;border-top:1px dashed #E7DBFF;text-align:left;scroll-margin-top:8px;border-radius:14px}
+.wardrobe.is-flash{animation:wardrobeFlash 1.3s ease}
+@keyframes wardrobeFlash{0%{box-shadow:0 0 0 0 rgba(139,108,240,.32)}28%{box-shadow:0 0 0 6px rgba(139,108,240,.14)}100%{box-shadow:0 0 0 0 rgba(139,108,240,0)}}
+.wardrobe__up{display:block;width:100%;margin-top:10px;padding:7px;border-radius:11px;font-size:11px;font-weight:800;color:#8E86A8;background:#F7F4FF}
+.wardrobe__up:active{background:#EFE9FF}
 .wardrobe__head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 2px}
 .wardrobe__title{font-size:13px;font-weight:900;color:#6B4BD6;letter-spacing:-.01em}
 .wardrobe__count{font-size:10.5px;font-weight:900;color:#7B5BE0;background:#F3ECFF;border:1px solid #E7DBFF;border-radius:999px;padding:4px 10px;white-space:nowrap}
@@ -773,7 +813,7 @@ body.no-scroll{overflow:hidden}
   .topbar__actions{padding-top:0}
   .welcome__ava{width:96px;height:96px}
   .welcome__title{font-size:17.5px}
-  .welcome__stage{height:196px}
+  .welcome__stage{height:clamp(330px,44dvh,380px)}
   .wfit{width:58px}
   .wfit__pic{width:58px;height:70px}
 }
@@ -1180,6 +1220,8 @@ body.no-scroll{overflow:hidden}
   <div class="welcome__card" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle" aria-describedby="welcomeMsg" tabindex="-1">
     <button class="welcome__x" type="button" data-welcome="greet" aria-label="환영 인사 닫기">✕</button>
     <div class="welcome__stage" id="welcomeStage">
+      <span class="stage-spot" aria-hidden="true"></span>
+      <span class="stage-shimmer" aria-hidden="true"></span>
       <i class="dspark" style="left:11%;bottom:26%" aria-hidden="true"></i>
       <i class="dspark" style="right:13%;bottom:34%;animation-delay:.7s;width:7px;height:7px" aria-hidden="true"></i>
       <i class="dspark" style="left:20%;bottom:52%;animation-delay:1.5s;width:6px;height:6px" aria-hidden="true"></i>
@@ -1192,14 +1234,16 @@ body.no-scroll{overflow:hidden}
     <p class="welcome__kicker">💜 오늘도 만나서 반가워요</p>
     <h2 class="welcome__title" id="welcomeTitle">현호 님, 어서 오세요!</h2>
     <p class="welcome__msg" id="welcomeMsg">오늘도 기분 좋게 시작해 볼까요? 이비가 옆에서 같이 할게요 💜</p>
+    <button class="btn btn--primary welcome__btn" type="button" id="welcomeStart">오늘 루틴 시작! ✨</button>
+    <button class="welcome__jump" type="button" id="wardrobeJump" aria-controls="wardrobe">👗 옷장 보기 ▾</button>
     <div class="wardrobe" id="wardrobe">
       <div class="wardrobe__head">
         <p class="wardrobe__title">👗 옷장</p>
         <span class="wardrobe__count" id="wCount">1 / 7 해금</span>
       </div>
       <div id="wardrobeGroups"></div>
+      <button class="wardrobe__up" type="button" id="wardrobeUp">▲ 위로 (오늘 루틴 시작)</button>
     </div>
-    <button class="btn btn--primary welcome__btn" type="button" id="welcomeStart">오늘 루틴 시작! ✨</button>
   </div>
 </div>
 
@@ -2868,6 +2912,8 @@ function openWelcome(force) {
   if (msg) msg.textContent = welcomeProgressText();
   renderWardrobe();
   el.hidden = false;
+  const _wc = $('#welcomePopup .welcome__card');
+  if (_wc) _wc.scrollTop = 0;   // 열 때는 항상 전신 캐릭터부터
   syncScrollLock();
   setTimeout(() => {
     const c = $('#welcomePopup .welcome__card');
@@ -2959,6 +3005,33 @@ function equipOutfit(id) {
   } else {
     Snd.tap(); haptic(5);
   }
+  return true;
+}
+
+function wardrobeTopOffset() {
+  const w = $('#wardrobe');
+  if (!w) return 0;
+  return Math.max(0, w.offsetTop - 10);
+}
+function jumpToWardrobe() {
+  const card = $('#welcomePopup .welcome__card');
+  const w = $('#wardrobe');
+  if (!card || !w || $('#welcomePopup').hidden) return false;
+  card.scrollTo({ top: wardrobeTopOffset(), behavior: 'smooth' });
+  w.classList.remove('is-flash');
+  void w.offsetWidth;
+  w.classList.add('is-flash');
+  setTimeout(() => w.classList.remove('is-flash'), 1400);
+  Snd.tap(); haptic(5);
+  return true;
+}
+function jumpToWelcomeTop() {
+  const card = $('#welcomePopup .welcome__card');
+  if (!card || $('#welcomePopup').hidden) return false;
+  card.scrollTo({ top: 0, behavior: 'smooth' });
+  const b = $('#welcomeStart');
+  if (b) { try { b.focus({ preventScroll: true }); } catch (e) {} }
+  Snd.tap(); haptic(5);
   return true;
 }
 
@@ -3728,6 +3801,8 @@ document.addEventListener('click', function (ev) {
   }
   const fitEl = ev.target.closest('[data-outfit]');
   if (fitEl) { equipOutfit(fitEl.dataset.outfit); return; }
+  if (ev.target.closest('#wardrobeJump')) { jumpToWardrobe(); return; }
+  if (ev.target.closest('#wardrobeUp')) { jumpToWelcomeTop(); return; }
   if (ev.target.closest('#welcomeStart')) { closeWelcome(true); return; }
   const welcomeEl = ev.target.closest('[data-welcome]');
   if (welcomeEl) { closeWelcome(true); return; }
