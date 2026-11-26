@@ -781,7 +781,7 @@ body.no-scroll{overflow:hidden}
 .welcome__stage.is-compact{height:0;margin-top:0;border-width:0;opacity:0;box-shadow:none}
 .welcome__stage.is-compact .wstage__pill,.welcome__stage.is-compact .wmood,
 .welcome__stage.is-compact .wcount{opacity:0;pointer-events:none}
-@media (min-width:520px){
+@media (min-width:500px){
   .welcome__card{max-width:480px;padding:16px 20px 18px}
   .welcome__stage{height:min(56dvh,520px)}
   .welcome__stage.is-compact{height:0}
@@ -1470,10 +1470,13 @@ function avatarCrop(o) {
 function paintAvatarCrop(img, o) {
   if (!img) return;
   const c = avatarCrop(o);
-  img.style.width = (100 / c.w) + '%';
+  /* 큰 아바타(밤 팝업 88px·축하 104px)는 어깨·옷깃까지 조금 더 넓게 보여 준다 */
+  const side = Number(img.getAttribute('width')) || 0;
+  const w = c.w * (side >= 84 ? 1.24 : 1);
+  img.style.width = (100 / w) + '%';
   img.style.height = 'auto';
-  img.style.left = ((0.5 - c.cx / c.w) * 100) + '%';
-  img.style.top = ((0.5 - c.cy * AVA_AR / c.w) * 100) + '%';
+  img.style.left = ((0.5 - c.cx / w) * 100) + '%';
+  img.style.top = ((0.5 - c.cy * AVA_AR / w) * 100) + '%';
 }
 function clearAvatarCrop(img) {
   if (!img) return;
