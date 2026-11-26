@@ -727,14 +727,13 @@ body.no-scroll{overflow:hidden}
 .wstage__body{
   position:absolute;inset:0;z-index:1;display:flex;align-items:flex-end;justify-content:center;
   transform-origin:50% 13%;transition:transform .9s cubic-bezier(.22,1,.36,1);will-change:transform;
-}
-/* 줌인은 얼굴·상반신만 — 배율을 조금 더 당겨 옆으로 뻗은 손·소매가 화면 밖으로 나가게 한다.
-   좌우 가장자리는 무대 배경으로 부드럽게 사라져 어떤 옷이든 잘린 손끝이 보이지 않는다. */
-.welcome__stage.is-zoom .wstage__body{
-  transform:translateY(30%) scale(var(--wzoom,3.45));
+  /* 좌우 가장자리는 무대 배경으로 부드럽게 — 줌인할 때 잘린 손끝·소매가 보이지 않게 (전신일 때는 그림의 여백이라 티가 안 남) */
   -webkit-mask-image:linear-gradient(90deg,rgba(0,0,0,0) 0%,#000 13%,#000 87%,rgba(0,0,0,0) 100%);
   mask-image:linear-gradient(90deg,rgba(0,0,0,0) 0%,#000 13%,#000 87%,rgba(0,0,0,0) 100%);
 }
+/* 줌인은 얼굴·상반신만 — 배율을 조금 더 당겨 옆으로 뻗은 손·소매가 화면 밖으로 나가게 한다.
+   좌우 가장자리는 무대 배경으로 부드럽게 사라져 어떤 옷이든 잘린 손끝이 보이지 않는다. */
+.welcome__stage.is-zoom .wstage__body{transform:translateY(30%) scale(var(--wzoom,3.45))}
 /* 화면이 넓을수록 같은 얼굴 크기가 되도록 배율을 조금씩 더 당긴다 */
 @media (min-width:412px){
   .welcome__stage.is-zoom .wstage__body{transform:translateY(30.3%) scale(var(--wzoom-md,3.72))}
