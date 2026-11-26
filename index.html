@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="데일리 루틴">
 <meta name="description" content="허벅지·종아리 운동부터 영어 공부, 약 먹기까지 — 현호 님의 매일 루틴 체크 앱">
-<meta name="app-build" content="hyunho-voice-picker-2026-11-26">
+<meta name="app-build" content="hyunho-voice-en-ko-2026-11-26">
 <style>
 /* ================= 기본 ================= */
 :root{
@@ -333,6 +333,17 @@ body.no-scroll{overflow:hidden}
 .vpkplay:active{transform:scale(.95)}
 .vpkrow.is-on .vpkplay{background:linear-gradient(135deg,#9E80F7,#7A57E4);color:#fff;border-color:transparent}
 .vpk__empty{margin:8px 2px 0;font-size:11px;font-weight:700;color:#8A7FA8;line-height:1.5}
+/* 인사 언어 탭 — 🇰🇷 한국어 인사 / 🇺🇸 영어 인사 */
+.vpk__lang{display:flex;gap:5px;margin-top:11px;padding:4px;border-radius:16px;background:#EDE6FC}
+.vpk__langbtn{position:relative;flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:10px 6px;border-radius:13px;font-size:12px;font-weight:800;color:#6B5A96;transition:transform .12s,background .18s,color .18s,box-shadow .18s}
+.vpk__langbtn:active{transform:scale(.97)}
+.vpk__langbtn.is-on{background:#fff;color:#4B3C7E;box-shadow:0 3px 10px rgba(75,60,126,.14)}
+.vpk__langbtn[data-vlang="en"].is-on{background:linear-gradient(135deg,#5B8DEF,#3358C8);color:#fff;box-shadow:0 7px 16px rgba(51,88,200,.3)}
+.vpk__langico{font-size:14px;line-height:1}
+.vpk__new{position:absolute;top:-7px;right:7px;padding:1px 5px;border-radius:7px;background:#FF4D6D;color:#fff;font-size:8.5px;font-weight:900;letter-spacing:.3px}
+.card.vpk.vpk--en{background:linear-gradient(168deg,#EDF4FF 0%,#F8FBFF 52%,#FFF3F5 100%);border-color:#DCE6FB}
+.vpkrow--en .vpkrow__meta{color:#5E76A8}
+.vpk__hintrow{margin:8px 2px 0;font-size:10.5px;font-weight:700;color:#8A7FA8;line-height:1.5}
 
 /* ================= 모달 / 시트 ================= */
 .modal{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-end;justify-content:center}
@@ -814,14 +825,18 @@ body.no-scroll{overflow:hidden}
     <!-- 이비 목소리 고르기 -->
     <div class="card vpk" id="voicePickerCard">
       <h3 class="card__title">🎙️ 이비 목소리 고르기</h3>
-      <p class="hint">말투를 누르면 바로 한마디 들려드려요. 폰에 있는 한국어 목소리 중에서도 골라 보세요.</p>
+      <div class="vpk__lang" id="voiceLangTabs" role="tablist" aria-label="인사 언어 고르기">
+        <button class="vpk__langbtn is-on" type="button" role="tab" data-vlang="ko" aria-selected="true"><span class="vpk__langico">🇰🇷</span><span>한국어 인사</span></button>
+        <button class="vpk__langbtn" type="button" role="tab" data-vlang="en" aria-selected="false"><span class="vpk__langico">🇺🇸</span><span>영어 인사</span><span class="vpk__new">NEW</span></button>
+      </div>
+      <p class="hint" id="voiceHint">말투를 누르면 바로 한마디 들려드려요. 폰에 있는 한국어 목소리 중에서도 골라 보세요.</p>
       <div class="vpk__chips" id="voiceChips" role="group" aria-label="이비 말투 고르기">
         <button class="vpk__chip" type="button" data-vpreset="natural" aria-pressed="false">자연스럽게</button>
         <button class="vpk__chip is-on" type="button" data-vpreset="cute" aria-pressed="true">살짝 귀엽게<span class="vpk__badge">기본</span></button>
         <button class="vpk__chip" type="button" data-vpreset="bright" aria-pressed="false">톡톡 발랄</button>
         <button class="vpk__chip" type="button" data-vpreset="gentle" aria-pressed="false">차분 다정</button>
       </div>
-      <p class="vpk__sub"><span>폰에 있는 목소리</span><span id="voiceCount"></span></p>
+      <p class="vpk__sub"><span id="voiceListLabel">폰에 있는 목소리</span><span id="voiceCount"></span></p>
       <div class="vpk__voices" id="voiceList" role="group" aria-label="한국어 목소리 목록"></div>
     </div>
 
@@ -836,7 +851,7 @@ body.no-scroll{overflow:hidden}
         <input type="checkbox" id="hapticToggle" checked>
       </label>
       <label class="switchrow">
-        <span><span class="switchrow__l">목소리 응원</span><span class="switchrow__s">폰의 한국어 음성으로 짧게 응원해요</span></span>
+        <span><span class="switchrow__l">목소리 응원</span><span class="switchrow__s">고른 언어(한국어 / 영어) 목소리로 짧게 응원해요</span></span>
         <input type="checkbox" id="voiceToggle" checked>
       </label>
       <button class="btn btn--danger btn--full" id="resetBtn">모든 기록 초기화</button>
@@ -1178,6 +1193,8 @@ function makeDefaults() {
     voice: true,
     voicePreset: 'cute',     // 말투: natural | cute | bright | gentle
     voiceUri: '',            // '' 이면 이비가 자동으로 고른 목소리
+    voiceLang: 'ko',         // 'ko' | 'en' — 인사·응원을 어느 언어로 들려줄지
+    enVoiceUri: '',          // '' 이면 미국 영어 여성 목소리를 자동으로 고른다
     routines: DEFAULTS.map(r => Object.assign({}, r, {
       color: r.color || PALETTE[0],
       createdAt: t,
@@ -1230,6 +1247,8 @@ function load() {
     if (typeof s.voice !== 'boolean') s.voice = true;
     if (!Voice.presets[s.voicePreset]) s.voicePreset = 'cute';
     if (typeof s.voiceUri !== 'string') s.voiceUri = '';
+    if (s.voiceLang !== 'en' && s.voiceLang !== 'ko') s.voiceLang = 'ko';
+    if (typeof s.enVoiceUri !== 'string') s.enVoiceUri = '';
     if (!s.days || typeof s.days !== 'object') s.days = {};
     if (!s.lastDone || typeof s.lastDone !== 'object') s.lastDone = {};
     if (!s.createdAt) s.createdAt = todayKey();
@@ -1608,8 +1627,9 @@ const HVoice = {
 
 /* 단계가 바뀔 때: 녹음한 목소리 → (안 되면) 기기 TTS */
 function shoutPhase(kind) {
-  if (kind === 'sprint') { if (!HVoice.play('fire')) Voice.say('파이어!'); }
-  else if (kind === 'rest') { if (!HVoice.play('relax')) Voice.say('릴랙스!'); }
+  const en = Voice.lang() === 'en';   // 영어 인사 모드에서는 녹음된 한국어 대신 영어 TTS
+  if (kind === 'sprint') { if (en || !HVoice.play('fire')) Voice.say(Voice.pick('파이어!', 'Fire!')); }
+  else if (kind === 'rest') { if (en || !HVoice.play('relax')) Voice.say(Voice.pick('릴랙스!', 'Relax!')); }
 }
 
 function haptic(ms) {
@@ -1661,22 +1681,42 @@ const Bgm = {
    목소리 응원 (기기의 한국어 TTS · 음성이 없으면 조용히 넘어감)
    ============================================================ */
 const CHEERS = ['좋아요!', '하나 끝났네요!', '잘하고 있어요!', '오늘도 멋져요!', '가볍게 하나 더!', '최고예요!', '루틴 하나 완료!', '좋은 흐름이에요!'];
+const CHEERS_EN = [
+  'Nice job! Keep it up!',
+  'Halfway there!',
+  "You're doing awesome!",
+  "One down. You've got this!",
+  "That's the spirit!",
+  'Look at you go!',
+  'Another one done. Great job!',
+  'Love the momentum!'
+];
 const CLEARS = [
   '오늘 루틴 전부 끝냈어요. 정말 잘하셨어요!',
   '와, 오늘 거의 다 해냈어요. 정말 대단해요!',
   '오늘도 올클리어예요. 스스로 칭찬해 주세요!',
   '루틴 전부 완료! 오늘 하루 정말 멋졌어요.'
 ];
+const CLEARS_EN = [
+  'Amazing! Every routine is done today. See you tomorrow!',
+  'Wow, you cleared every routine today. So proud of you!',
+  'All done for today. Give yourself a big pat on the back!',
+  'Perfect day! Every routine is checked off. See you tomorrow!'
+];
 
 const VOICE_SAMPLE = '현호 님, 오늘도 화이팅이에요! 💜';
+const VOICE_SAMPLE_EN = "Hey Hyunho! Let's crush your routine today!";
+const WELCOME_KO = '현호 님, 어서 오세요! 오늘도 기분 좋게 시작해 볼까요?';
+const WELCOME_EN = 'Welcome, Hyunho! Ready for a great day?';
 
 const Voice = {
   supported: (typeof window !== 'undefined') && ('speechSynthesis' in window) && (typeof window.SpeechSynthesisUtterance === 'function'),
   ko: null,
+  en: null,
   lastCheer: -1,
   lastAt: 0,
   quietUntil: 0,     // 인사말이 끝날 때까지 끼어들지 않게
-  /* 말투 프리셋 — pitch(높낮이) · rate(속도) */
+  /* 말투 프리셋 — pitch(높낮이) · rate(속도), 한국어·영어 모두 같은 칩을 쓴다 */
   presets: {
     natural: { label: '자연스럽게', pitch: 1.00, rate: 0.98 },
     cute:    { label: '살짝 귀엽게', pitch: 1.05, rate: 1.01, badge: '기본' },
@@ -1686,6 +1726,13 @@ const Voice = {
   preset() {
     return this.presets[(state && state.voicePreset)] || this.presets.cute;
   },
+  /* 지금 인사·응원을 어느 언어로 들려줄지 */
+  lang() {
+    return (state && state.voiceLang === 'en') ? 'en' : 'ko';
+  },
+  pick(ko, en) { return this.lang() === 'en' ? en : ko; },
+  sample() { return this.lang() === 'en' ? VOICE_SAMPLE_EN : VOICE_SAMPLE; },
+  welcomeText() { return this.lang() === 'en' ? WELCOME_EN : WELCOME_KO; },
   /* 폰에 들어 있는 한국어 목소리 목록 */
   koVoices() {
     if (!this.supported) return [];
@@ -1719,11 +1766,88 @@ const Voice = {
     return arr.find(v => v.voiceURI === state.voiceUri) ||
            arr.find(v => v.name === state.voiceUri) || null;
   },
+
+  /* ---------- 영어(미국) 목소리 ---------- */
+  /* 기기에 있는 영어 목소리 전부 */
+  enVoices() {
+    if (!this.supported) return [];
+    try {
+      const vs = window.speechSynthesis.getVoices() || [];
+      return vs.filter(v => /^en([-_]|$)/i.test(v.lang || ''));
+    } catch (e) { return []; }
+  },
+  /* 미국 영어인지 — en-US / en_US / (국가 표기가 없는) en */
+  isUsEn(v) {
+    const l = (v.lang || '').trim();
+    return /^en[-_]?us([-_]|$)/i.test(l) || /^en$/i.test(l);
+  },
+  /* 안드로이드 구글 음성 이름 끝 글자: en-us-x-sfg-local · en-us-x-tpf-local(여성) / en-us-x-iom-local(남성) */
+  androidGender(v) {
+    const s = ((v.voiceURI || '') + ' ' + (v.name || '')).toLowerCase();
+    const m = s.match(/[a-z]{2}-x-[a-z]{1,2}([gmf])-(?:local|network|voice)/);
+    return m ? m[1] : '';
+  },
+  /* 이름으로 드러난 남성 목소리 (Daniel·Guy·David·Mark 등) */
+  isMaleEn(v) {
+    if (this.androidGender(v) === 'm') return true;
+    const s = ((v.name || '') + ' ' + (v.voiceURI || '')).toLowerCase();
+    if (/\b(woman|female|girl)\b/.test(s)) return false;
+    return /(^|[\s\-_\[(])(daniel|arthur|george|guy|david|mark|ryan|matthew|brian|eric|paul|john|michael|alex|fred|ralph|tom|liam|james|male|man)(?=[\s\-_\])]|$)/.test(s);
+  },
+  /* 이름으로 드러난 여성 목소리 */
+  isFemaleEn(v) {
+    if (this.isMaleEn(v)) return false;
+    const g = this.androidGender(v);
+    if (g === 'g' || g === 'f') return true;
+    const s = ((v.name || '') + ' ' + (v.voiceURI || '')).toLowerCase();
+    return /female|woman|girl|samantha|victoria|allie|ava|susan|zira|aria|jenny|michelle|jessa|emma|salli|kimberly|ivy|joanna|kendra|nicole|penelope|olivia|karen|moira|tessa|fiona|serena|amy|sonia|libby|natasha|clara|google us english/.test(s);
+  },
+  /* 미국 영어에서 남성으로 알려진 목소리만 뺀 목록 */
+  enVoicesUS() {
+    return this.enVoices().filter(v => this.isUsEn(v) && !this.isMaleEn(v));
+  },
+  /* 미국 영어 여성 목소리 — 성별 표시가 없는 기기에서는 남성만 빼고 보여준다 */
+  enFemaleVoices() {
+    const us = this.enVoicesUS();
+    const girls = us.filter(v => this.isFemaleEn(v));
+    return girls.length ? girls : us;
+  },
+  hasTaggedFemaleEn() {
+    return this.enVoicesUS().some(v => this.isFemaleEn(v));
+  },
+  /* 미국 여성 목소리 중 이비에게 어울리는 순서 */
+  scoreEn(v) {
+    const n = ((v.name || '') + ' ' + (v.voiceURI || '')).toLowerCase();
+    let s = 0;
+    if (/samantha|ava|allie|susan|victoria|aria|jenny|michelle|zira|google us english/.test(n)) s += 40;
+    if (/natural|neural|premium|online|enhanced|wavenet/.test(n)) s += 26;
+    if (/google/.test(n)) s += 22;
+    if (/female|여성/.test(n)) s += 14;
+    const g = this.androidGender(v);
+    if (g === 'g' || g === 'f') s += 10;
+    if (/^en[-_]?us/i.test(v.lang || '')) s += 12;
+    if (v.localService === false) s += 6;
+    if (v.default) s += 1;
+    return s;
+  },
+  autoEnPick(vs) {
+    const arr = vs || this.enFemaleVoices();
+    return arr.slice().sort((a, b) => this.scoreEn(b) - this.scoreEn(a))[0] || null;
+  },
+  chosenEn(vs) {
+    if (!state || !state.enVoiceUri) return null;
+    const arr = vs || this.enFemaleVoices();
+    return arr.find(v => v.voiceURI === state.enVoiceUri) ||
+           arr.find(v => v.name === state.enVoiceUri) || null;
+  },
+
   init() {
     if (!this.supported) return;
     const pick = () => {
       const vs = this.koVoices();
       this.ko = this.chosen(vs) || this.autoPick(vs);
+      const evs = this.enFemaleVoices();
+      this.en = this.chosenEn(evs) || this.autoEnPick(evs);
       renderVoicePicker();
     };
     pick();
@@ -1734,22 +1858,23 @@ const Voice = {
     setTimeout(pick, 400);
     setTimeout(pick, 1400);
   },
-  utter(text, voice) {
+  utter(text, voice, lang) {
     const p = this.preset();
+    const en = lang ? (lang === 'en') : (this.lang() === 'en');
+    const v = voice || (en ? this.en : this.ko);
     const u = new window.SpeechSynthesisUtterance(text);
-    u.lang = 'ko-KR';
-    const v = voice || this.ko;
+    u.lang = en ? 'en-US' : 'ko-KR';
     if (v) u.voice = v;
     u.rate = p.rate;      // 고른 말투의 속도
     u.pitch = p.pitch;    // 고른 말투의 높낮이
     u.volume = 0.95;
     return u;
   },
-  say(text) {
+  say(text, lang) {
     if (!this.supported || !state || !state.voice || !state.sound) return false;
     try {
       window.speechSynthesis.cancel();
-      window.speechSynthesis.speak(this.utter(text));
+      window.speechSynthesis.speak(this.utter(text, null, lang));
       return true;
     } catch (e) { return false; }
   },
@@ -1758,7 +1883,7 @@ const Voice = {
     if (!this.supported) return false;
     try {
       window.speechSynthesis.cancel();
-      window.speechSynthesis.speak(this.utter(text || VOICE_SAMPLE, voice));
+      window.speechSynthesis.speak(this.utter(text || this.sample(), voice));
       this.lastAt = Date.now();
       this.quietUntil = Date.now() + 2600;   // 미리 듣는 동안 응원 멘트가 끼어들지 않게
       return true;
@@ -1768,21 +1893,22 @@ const Voice = {
   welcome(text) {
     this.quietUntil = Date.now() + 4200;
     this.lastAt = Date.now();
-    return this.say(text || '현호 님, 어서 오세요! 오늘도 기분 좋게 시작해 볼까요?');
+    return this.say(text || this.welcomeText());
   },
   cheer() {
     const now = Date.now();
     if (now < this.quietUntil) return;
     if (now - this.lastAt < 1600) return;
-    let i = Math.floor(Math.random() * CHEERS.length);
-    if (i === this.lastCheer) i = (i + 1) % CHEERS.length;
+    const list = this.lang() === 'en' ? CHEERS_EN : CHEERS;
+    let i = Math.floor(Math.random() * list.length);
+    if (i === this.lastCheer) i = (i + 1) % list.length;
     this.lastCheer = i;
     this.lastAt = now;
-    this.say(CHEERS[i]);
+    this.say(list[i]);
   },
   allClear() {
-    const i = Math.floor(Math.random() * CLEARS.length);
-    this.say(CLEARS[i]);
+    const list = this.lang() === 'en' ? CLEARS_EN : CLEARS;
+    this.say(list[Math.floor(Math.random() * list.length)]);
   },
   stop() {
     try { if (this.supported) window.speechSynthesis.cancel(); } catch (e) {}
@@ -2099,6 +2225,10 @@ function renderVoicePicker() {
   const chips = $('#voiceChips');
   if (!wrap || !chips) return;
 
+  const en = Voice.lang() === 'en';
+  const card = $('#voicePickerCard');
+  if (card) card.classList.toggle('vpk--en', en);
+
   const curKey = (state && Voice.presets[state.voicePreset]) ? state.voicePreset : 'cute';
   $$('[data-vpreset]', chips).forEach(b => {
     const on = b.dataset.vpreset === curKey;
@@ -2106,10 +2236,28 @@ function renderVoicePicker() {
     b.setAttribute('aria-pressed', on ? 'true' : 'false');
   });
 
+  /* 🇰🇷 한국어 인사 / 🇺🇸 영어 인사 탭 */
+  const tabs = $('#voiceLangTabs');
+  if (tabs) $$('[data-vlang]', tabs).forEach(b => {
+    const on = b.dataset.vlang === (en ? 'en' : 'ko');
+    b.classList.toggle('is-on', on);
+    b.setAttribute('aria-selected', on ? 'true' : 'false');
+  });
+
+  const hint = $('#voiceHint');
+  if (hint) hint.textContent = en
+    ? '인사·응원·올클리어를 자연스러운 미국 영어로 들려드려요. 미국 여성 목소리 중에서 골라 보세요.'
+    : '말투를 누르면 바로 한마디 들려드려요. 폰에 있는 한국어 목소리 중에서도 골라 보세요.';
+  const listLabel = $('#voiceListLabel');
+  if (listLabel) listLabel.textContent = en ? '미국 영어 여성 목소리' : '폰에 있는 목소리';
+  wrap.setAttribute('aria-label', en ? '미국 영어 여성 목소리 목록' : '한국어 목소리 목록');
+
   const countEl = $('#voiceCount');
-  const vs = Voice.koVoices();
-  const auto = Voice.autoPick(vs);
-  const pickUri = (state && state.voiceUri) || '';
+  const vs = en
+    ? Voice.enFemaleVoices().slice().sort((a, b) => Voice.scoreEn(b) - Voice.scoreEn(a))
+    : Voice.koVoices();
+  const auto = en ? Voice.autoEnPick(vs) : Voice.autoPick(vs);
+  const pickUri = en ? ((state && state.enVoiceUri) || '') : ((state && state.voiceUri) || '');
   if (countEl) countEl.textContent = vs.length ? vs.length + '개' : '';
 
   if (!Voice.supported) {
@@ -2117,6 +2265,44 @@ function renderVoicePicker() {
     return;
   }
 
+  if (en) {
+    /* ---- 🇺🇸 영어 인사: 미국 영어 여성 목소리만 ---- */
+    const rows = [];
+    rows.push(
+      '<div class="vpkrow vpkrow--en' + (pickUri ? '' : ' is-on') + '" data-vuri="auto">' +
+        '<span class="vpkrow__ico">✨</span>' +
+        '<span class="vpkrow__text">' +
+          '<span class="vpkrow__name">자동 추천' + (pickUri ? '' : '<i class="vpkrow__now">선택됨</i>') + '</span>' +
+          '<span class="vpkrow__meta">' + (auto ? esc(auto.name || '미국 영어 음성') + ' 목소리로 읽어 드려요' : '폰에 미국 영어 여성 목소리가 아직 없어요') + '</span>' +
+        '</span>' +
+        '<button class="vpkplay" type="button" data-vuri="auto" aria-label="자동 추천 목소리 들어보기">▶ 들어보기</button>' +
+      '</div>'
+    );
+    if (!vs.length) {
+      rows.push('<p class="vpk__empty">폰에 미국 영어 여성 목소리가 아직 없어요. 폰 설정 → 언어 및 입력 → 텍스트 음성 변환에서 영어(미국) 음성을 설치하면 여기에 나와요.</p>');
+    } else if (!Voice.hasTaggedFemaleEn()) {
+      rows.push('<p class="vpk__hintrow">이 기기의 영어 목소리는 성별 표시가 없어서, 남성으로 알려진 목소리만 빼고 보여드려요.</p>');
+    }
+    vs.forEach((v, i) => {
+      const uri = v.voiceURI || v.name || ('en' + i);
+      const on = !!pickUri && (uri === pickUri || v.name === pickUri);
+      const rec = !on && auto && auto.voiceURI === v.voiceURI && auto.name === v.name;
+      rows.push(
+        '<div class="vpkrow vpkrow--en' + (on ? ' is-on' : '') + '" data-vuri="' + esc(uri) + '">' +
+          '<span class="vpkrow__ico">🇺🇸</span>' +
+          '<span class="vpkrow__text">' +
+            '<span class="vpkrow__name">' + esc(v.name || '미국 영어 음성') + (on ? '<i class="vpkrow__now">선택됨</i>' : (rec ? '<i class="vpkrow__rec">🇺🇸 추천</i>' : '')) + '</span>' +
+            '<span class="vpkrow__meta">' + esc(v.lang || 'en-US') + ' · 미국 여성 음성' + (v.localService === false ? ' · 온라인 음성' : ' · 기기에 저장된 음성') + '</span>' +
+          '</span>' +
+          '<button class="vpkplay" type="button" data-vuri="' + esc(uri) + '" aria-label="' + esc((v.name || '미국 영어 음성') + ' 들어보기') + '">▶ 들어보기</button>' +
+        '</div>'
+      );
+    });
+    wrap.innerHTML = rows.join('');
+    return;
+  }
+
+  /* ---- 🇰🇷 한국어 인사 ---- */
   const rows = [];
   rows.push(
     '<div class="vpkrow' + (pickUri ? '' : ' is-on') + '" data-vuri="auto">' +
@@ -2154,17 +2340,44 @@ function setVoicePreset(key, speak) {
   state.voicePreset = key;
   save();
   renderVoicePicker();
-  if (speak) Voice.preview(VOICE_SAMPLE, Voice.ko);
+  if (speak) Voice.preview(Voice.sample());
+  haptic(8);
+}
+
+/* 🇰🇷 / 🇺🇸 한 번 누르면 바로 바뀐다 — 그 언어로 미리 한마디 들려준다 */
+function setVoiceLang(lang, speak) {
+  const v = (lang === 'en') ? 'en' : 'ko';
+  state.voiceLang = v;
+  save();
+  if (Voice.supported) {
+    if (v === 'en') {
+      const evs = Voice.enFemaleVoices();
+      Voice.en = Voice.chosenEn(evs) || Voice.autoEnPick(evs);
+    } else {
+      const vs = Voice.koVoices();
+      Voice.ko = Voice.chosen(vs) || Voice.autoPick(vs);
+    }
+  }
+  renderVoicePicker();
+  if (speak) Voice.preview();
   haptic(8);
 }
 
 function setVoiceChoice(uri, speak) {
-  state.voiceUri = (uri && uri !== 'auto') ? String(uri) : '';
-  save();
-  const vs = Voice.koVoices();
-  Voice.ko = Voice.chosen(vs) || Voice.autoPick(vs);
+  const en = Voice.lang() === 'en';
+  if (en) {
+    state.enVoiceUri = (uri && uri !== 'auto') ? String(uri) : '';
+    save();
+    const evs = Voice.enFemaleVoices();
+    Voice.en = Voice.chosenEn(evs) || Voice.autoEnPick(evs);
+  } else {
+    state.voiceUri = (uri && uri !== 'auto') ? String(uri) : '';
+    save();
+    const vs = Voice.koVoices();
+    Voice.ko = Voice.chosen(vs) || Voice.autoPick(vs);
+  }
   renderVoicePicker();
-  if (speak) Voice.preview(VOICE_SAMPLE, Voice.ko);
+  if (speak) Voice.preview();
   haptic(8);
 }
 
@@ -2324,7 +2537,7 @@ function goFromNightPopup() {
      뽀용~ 소리와 함께 한국어 인사말을 들려줘요
    ============================================================ */
 let welcomeShown = false;
-const WELCOME_VOICE_TEXT = '현호 님, 어서 오세요! 오늘도 기분 좋게 시작해 볼까요?';
+/* 인사말 문구는 Voice.welcomeText()가 state.voiceLang에 맞춰 고른다 */
 
 /* 밤 9시가 넘었는데 남은 루틴이 있으면 밤 인사 팝업이 먼저 와요 — 그러면 환영 팝업은 쉬어요 */
 function nightWillShow() {
@@ -2352,7 +2565,7 @@ function playWelcomeSound() {
   Snd.on = true;
   if (!Snd.ensure()) return false;
   Snd.welcome();                      // 뽀·용·~ 반짝
-  if (state.voice) setTimeout(() => { if (state.voice && state.sound) Voice.welcome(WELCOME_VOICE_TEXT); }, 320);
+  if (state.voice) setTimeout(() => { if (state.voice && state.sound) Voice.welcome(); }, 320);
   return true;
 }
 
@@ -2688,7 +2901,7 @@ function finishTimer() {
   } else {
     if (!ui.timerOpen) toast('4분 완주! 수고했어요 🚴');
   }
-  if (!celebrated) setTimeout(() => Voice.say('4분 완주! 수고하셨어요!'), 900);
+  if (!celebrated) setTimeout(() => Voice.say(Voice.pick('4분 완주! 수고하셨어요!', 'Four minutes done! Great work!')), 900);
 }
 
 /* ============================================================
@@ -3219,11 +3432,16 @@ $('#hapticToggle').addEventListener('change', e => {
 $('#voiceToggle').addEventListener('change', e => {
   state.voice = e.target.checked;
   save();
-  if (state.voice) Voice.say('목소리 응원을 켰어요. 오늘도 가볍게 해 봐요!');
+  if (state.voice) Voice.say(Voice.pick('목소리 응원을 켰어요. 오늘도 가볍게 해 봐요!', "Voice cheers are on. Let's take it easy today!"));
   else Voice.stop();
 });
 
-/* 목소리 고르기 — 말투 칩과 목소리 줄 */
+/* 목소리 고르기 — 인사 언어 탭, 말투 칩, 목소리 줄 */
+$('#voiceLangTabs').addEventListener('click', e => {
+  const b = e.target.closest('[data-vlang]');
+  if (!b) return;
+  setVoiceLang(b.dataset.vlang, true);
+});
 $('#voiceChips').addEventListener('click', e => {
   const b = e.target.closest('[data-vpreset]');
   if (!b) return;
@@ -3407,7 +3625,7 @@ window.__routine = {
   duesFor: duesFor,
   streak: streak,
   voice: Voice,
-  voicePicker: { render: renderVoicePicker, setPreset: setVoicePreset, setChoice: setVoiceChoice, sample: VOICE_SAMPLE },
+  voicePicker: { render: renderVoicePicker, setPreset: setVoicePreset, setChoice: setVoiceChoice, setLang: setVoiceLang, sample: VOICE_SAMPLE, sampleEn: VOICE_SAMPLE_EN, welcomeEn: WELCOME_EN, cheersEn: CHEERS_EN, clearsEn: CLEARS_EN },
   hvoice: HVoice,
   snd: Snd,
   welcome: { open: openWelcome, close: closeWelcome, play: playWelcomeSound, unlock: unlockAudio, nightWillShow: nightWillShow, get shown() { return welcomeShown; } },
