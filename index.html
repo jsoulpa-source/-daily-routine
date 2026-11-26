@@ -1550,7 +1550,7 @@ function paintTopbarFace(animate) {
   if (o) paintAvatarCrop(img, o); else clearAvatarCrop(img);
   img.dataset.face = key;
   img.alt = o
-    ? (o.name + ' 차림의 이비 — 오늘 남은 루틴 ' + left + '개, ' + FACE_LABEL[key])
+    ? (o.name + ' 차림의 이비 — 오늘 남은 루틴 ' + left + '개')
     : '이비 — 오늘 남은 루틴 ' + left + '개, ' + FACE_LABEL[key];
   const btn = $('#topbarAva');
   if (btn && changed && animate) {
