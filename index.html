@@ -3345,6 +3345,7 @@ function unlockAudio() {
 let welcomeVoiceDone = false;
 let welcomeVoiceAt = 0;
 let welcomeVoiceTap = null;
+let welcomeGreetTried = false;   // '왔어' 인사는 앱을 열 때 한 번만 (옷장 버튼으로 다시 열어도 반복하지 않음)
 
 function disarmWelcomeVoiceTap() {
   if (welcomeVoiceTap) {
@@ -3369,7 +3370,8 @@ function playWelcomeClipGreeting() {
 }
 
 function scheduleWelcomeGreeting() {
-  welcomeVoiceDone = false;
+  if (welcomeGreetTried) return;     // 앱을 열 때 한 번만
+  welcomeGreetTried = true;
   if (!state || !state.sound || !state.voice) return;
   if (!Voice.useClips()) return;
   MVoice.prepare();
