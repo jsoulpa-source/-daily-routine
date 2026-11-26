@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="데일리 루틴">
 <meta name="description" content="허벅지·종아리 운동부터 영어 공부, 약 먹기까지 — 현호 님의 매일 루틴 체크 앱">
-<meta name="app-build" content="hyunho-voice-en-ko-2026-11-26">
+<meta name="app-build" content="hyunho-fold-done-2026-11-26">
 <style>
 /* ================= 기본 ================= */
 :root{
@@ -214,6 +214,45 @@ body.no-scroll{overflow:hidden}
   padding:0 8px;
 }
 .quote b{color:var(--ink2)}
+
+/* ================= 한 것 접기 ================= */
+.foldrow{display:flex;align-items:center;gap:8px;margin-top:14px;padding-left:2px}
+.foldchip{
+  display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:999px;
+  background:#fff;border:1px solid var(--line);color:var(--muted);
+  font-size:12.5px;font-weight:800;letter-spacing:-.01em;box-shadow:var(--shadow-sm);
+  transition:background .2s,color .2s,border-color .2s,transform .15s ease;
+}
+.foldchip:active{transform:scale(.96)}
+.foldchip.is-on{background:var(--green-l);border-color:#DCCBFF;color:var(--green-d)}
+.foldrow__hint{font-size:11px;color:var(--muted);font-weight:600;margin-left:auto;white-space:nowrap}
+.allbanner{
+  margin-top:16px;padding:14px 16px;border-radius:18px;text-align:center;
+  background:linear-gradient(135deg,#FFF5DA 0%,#FFE9F2 52%,#F1E8FF 100%);
+  border:1px solid #F2DDF0;color:#8A4FB0;font-size:13.5px;font-weight:800;letter-spacing:-.02em;
+  box-shadow:0 7px 18px rgba(180,120,220,.16);
+  animation:allbannerIn .4s cubic-bezier(.2,1.2,.4,1) both;
+}
+@keyframes allbannerIn{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:none}}
+.donefold{margin-top:14px}
+.donefold__head{
+  width:100%;display:flex;align-items:center;gap:8px;padding:12px 15px;border-radius:18px;
+  background:#fff;border:1px solid var(--line);box-shadow:var(--shadow-sm);
+  font-size:13px;font-weight:800;color:var(--ink2);text-align:left;
+  transition:background .2s,border-color .2s,color .2s,transform .15s ease;
+}
+.donefold__head:active{transform:scale(.985)}
+.donefold.is-open .donefold__head{background:var(--green-l);border-color:#DCCBFF;color:var(--green-d)}
+.donefold__num{font-weight:900;color:var(--green-d)}
+.donefold__caret{margin-left:auto;font-size:12px;color:var(--muted);transition:transform .28s ease,color .2s}
+.donefold.is-open .donefold__caret{transform:rotate(180deg);color:var(--green-d)}
+.donefold__body{
+  max-height:0;overflow:hidden;opacity:0;
+  transition:max-height .32s cubic-bezier(.25,.9,.3,1),opacity .26s ease;
+}
+.donefold.is-open .donefold__body{opacity:1}
+.donefold__body>.list{padding:10px 0 2px}
+.item.is-leaving{pointer-events:none}
 
 /* ================= 하단 탭 ================= */
 .tabbar{
@@ -703,6 +742,11 @@ body.no-scroll{overflow:hidden}
 
     <div class="weekstrip" id="weekStrip" aria-label="최근 7일 기록"></div>
 
+    <div class="foldrow">
+      <button class="foldchip is-on" id="foldDoneChip" type="button" aria-pressed="true" aria-label="한 것 접기 켜짐 — 완료한 루틴을 목록에서 접어 둡니다">✅ 한 것 접기</button>
+      <span class="foldrow__hint" id="foldDoneHint">완료한 루틴은 아래로 모여요</span>
+    </div>
+
     <div id="groupsWrap"></div>
 
     <section class="group group--rest" id="restGroup" hidden>
@@ -1172,7 +1216,8 @@ const EMOJIS = ['🍗','🦵','🍫','💪','🦅','🎮','🚴','🗣️','💊
    상태
    ============================================================ */
 let state = null;
-const ui = { tab:'home', timerOpen:false, dayKey:null, editId:null, ddayId:null, logKey:null, wRange:7, wSel:null, fEmoji:'🍗', dEmoji:'🎯', fPeriod:'daily', just:'', pendingCelebrate:false, calY:0, calM:0 };
+let foldLeaveTimer = null;
+const ui = { tab:'home', timerOpen:false, dayKey:null, editId:null, ddayId:null, logKey:null, wRange:7, wSel:null, fEmoji:'🍗', dEmoji:'🎯', fPeriod:'daily', just:'', pendingCelebrate:false, calY:0, calM:0, doneOpen:false };
 
 function storeGet() {
   try { return localStorage.getItem(KEY); } catch (e) { return null; }
@@ -1191,6 +1236,7 @@ function makeDefaults() {
     sound: true,
     haptic: true,
     voice: true,
+    hideDone: true,          // 한 것 접기 — 완료한 루틴은 아래 한 줄로 접어 둔다 (기본 켜짐)
     voicePreset: 'cute',     // 말투: natural | cute | bright | gentle
     voiceUri: '',            // '' 이면 이비가 자동으로 고른 목소리
     voiceLang: 'ko',         // 'ko' | 'en' — 인사·응원을 어느 언어로 들려줄지
@@ -1245,6 +1291,7 @@ function load() {
     if (typeof s.sound !== 'boolean') s.sound = true;
     if (typeof s.haptic !== 'boolean') s.haptic = true;
     if (typeof s.voice !== 'boolean') s.voice = true;
+    if (typeof s.hideDone !== 'boolean') s.hideDone = true;
     if (!Voice.presets[s.voicePreset]) s.voicePreset = 'cute';
     if (typeof s.voiceUri !== 'string') s.voiceUri = '';
     if (s.voiceLang !== 'en' && s.voiceLang !== 'ko') s.voiceLang = 'ko';
@@ -1709,6 +1756,21 @@ const VOICE_SAMPLE_EN = "Hey Hyunho! Let's crush your routine today!";
 const WELCOME_KO = '현호 님, 어서 오세요! 오늘도 기분 좋게 시작해 볼까요?';
 const WELCOME_EN = 'Welcome, Hyunho! Ready for a great day?';
 
+/* 앱을 열 때 오늘 진행 상황을 그대로 알려 주는 인사말 (팝업 자막·목소리 둘 다 이 문장을 쓴다) */
+function welcomeProgressText(lang) {
+  const st = dayStats(todayKey());
+  const total = st.total, done = st.done, left = Math.max(0, total - done);
+  const en = (lang || (Voice && Voice.lang ? Voice.lang() : 'ko')) === 'en';
+  if (en) {
+    if (done === 0) return 'Welcome, Hyunho! ' + total + ' routines today. Let\'s get started!';
+    if (left > 0) return 'Hey Hyunho! ' + done + ' done today, and ' + left + ' left to go. You\'ve got this!';
+    return 'Amazing, Hyunho! All ' + total + ' routines done today!';
+  }
+  if (done === 0) return '현호 님, 오늘 루틴 ' + total + '개, 기분 좋게 시작해 볼까요?';
+  if (left > 0) return '현호 님, 오늘 ' + done + '개 했고 이제 ' + left + '개 남았어요! 화이팅!';
+  return '현호 님, 오늘 루틴 ' + total + '개 전부 다 했어요! 정말 대단해요!';
+}
+
 const Voice = {
   supported: (typeof window !== 'undefined') && ('speechSynthesis' in window) && (typeof window.SpeechSynthesisUtterance === 'function'),
   ko: null,
@@ -1732,7 +1794,7 @@ const Voice = {
   },
   pick(ko, en) { return this.lang() === 'en' ? en : ko; },
   sample() { return this.lang() === 'en' ? VOICE_SAMPLE_EN : VOICE_SAMPLE; },
-  welcomeText() { return this.lang() === 'en' ? WELCOME_EN : WELCOME_KO; },
+  welcomeText() { return welcomeProgressText(this.lang()); },
   /* 폰에 들어 있는 한국어 목소리 목록 */
   koVoices() {
     if (!this.supported) return [];
@@ -2044,8 +2106,38 @@ function renderHome() {
   $('#weekStrip').innerHTML = strip.join('');
 
   // 오늘 목록 — 아침 / 점심 후 / 저녁 / 챙길 것 / 주기 루틴
-  const sections = GROUPS.map(g => groupSectionHTML(g, st.dues, t)).filter(Boolean);
-  $('#groupsWrap').innerHTML = sections.length ? sections.join('') : '<div class="empty" style="margin-top:18px">오늘은 예정된 루틴이 없어요. 편집 탭에서 루틴을 추가해 보세요.</div>';
+  // '한 것 접기'가 켜져 있으면 남은 루틴만 그룹에 남기고, 완료한 루틴은 아래 한 줄로 접어 모은다.
+  const hideDone = !!state.hideDone;
+  const chip = $('#foldDoneChip');
+  if (chip) {
+    chip.classList.toggle('is-on', hideDone);
+    chip.classList.toggle('is-off', !hideDone);
+    chip.setAttribute('aria-pressed', hideDone ? 'true' : 'false');
+    chip.setAttribute('aria-label', hideDone ? '한 것 접기 켜짐 — 완료한 루틴을 목록에서 접어 둡니다' : '한 것 접기 꺼짐 — 완료한 루틴도 목록에 함께 보입니다');
+  }
+  const foldHint = $('#foldDoneHint');
+  if (foldHint) foldHint.textContent = hideDone ? '완료한 루틴은 아래로 모여요' : '완료한 루틴까지 한 번에 보여요';
+
+  const sections = GROUPS.map(g => groupSectionHTML(g, st.dues, t, hideDone)).filter(Boolean);
+  const doneItems = hideDone ? st.dues.filter(r => isChecked(t, r.id)) : [];
+  const allDone = st.total > 0 && st.done === st.total;
+
+  let listHTML = sections.join('');
+  if (hideDone) {
+    if (allDone) listHTML += '<div class="allbanner">🎉 오늘 루틴을 전부 끝냈어요!</div>';
+    if (doneItems.length) {
+      listHTML += '<div class="donefold' + (ui.doneOpen ? ' is-open' : '') + '">' +
+        '<button class="donefold__head" type="button" data-donefold aria-expanded="' + (ui.doneOpen ? 'true' : 'false') + '">' +
+          '<span>✅ 완료한 루틴 <b class="donefold__num">' + doneItems.length + '</b>개 보기</span>' +
+          '<span class="donefold__caret" aria-hidden="true">▾</span>' +
+        '</button>' +
+        '<div class="donefold__body"><ul class="list">' + doneItems.map(r => itemHTML(r, t, {})).join('') + '</ul></div>' +
+      '</div>';
+    }
+  }
+  $('#groupsWrap').innerHTML = listHTML || '<div class="empty" style="margin-top:18px">오늘은 예정된 루틴이 없어요. 편집 탭에서 루틴을 추가해 보세요.</div>';
+  const openFold = $('#groupsWrap .donefold.is-open .donefold__body');
+  if (openFold) openFold.style.maxHeight = openFold.scrollHeight + 'px';
 
   // 쉬는 날 · 예정
   const rest = state.routines.filter(r => {
@@ -2072,11 +2164,14 @@ function renderHome() {
   $('#quote').innerHTML = quotes[idx];
 }
 
-function groupSectionHTML(g, dues, t) {
-  const items = dues.filter(r => (r.group || 'anytime') === g.id);
+function groupSectionHTML(g, dues, t, hideDone) {
+  const all = dues.filter(r => (r.group || 'anytime') === g.id);
+  if (!all.length) return '';
+  const doneCount = all.filter(r => isChecked(t, r.id)).length;
+  const allDone = doneCount === all.length;
+  // 한 것 접기: 완료한 루틴은 그룹에서 빼고 아래 '완료한 루틴 보기'로 모은다. 그룹에 남은 게 없으면 머리까지 숨긴다.
+  const items = hideDone ? all.filter(r => !isChecked(t, r.id)) : all;
   if (!items.length) return '';
-  const doneCount = items.filter(r => isChecked(t, r.id)).length;
-  const allDone = doneCount === items.length;
 
   let inner = '';
   let main = items;
@@ -2099,7 +2194,7 @@ function groupSectionHTML(g, dues, t) {
   return '<section class="group">' +
     '<div class="group__head">' +
       '<h2 class="group__title">' + g.emoji + ' ' + g.title + '</h2>' +
-      '<span class="countpill' + (allDone ? ' is-done' : '') + '">' + (allDone ? '✓' : (doneCount + '/' + items.length)) + '</span>' +
+      '<span class="countpill' + (allDone ? ' is-done' : '') + '">' + (allDone ? '✓' : (doneCount + '/' + all.length)) + '</span>' +
       '<span class="group__hint">' + (allDone ? '완료!' : g.hint) + '</span>' +
     '</div>' + inner +
   '</section>';
@@ -2422,13 +2517,60 @@ function toggleCheck(id, k) {
   if (!wasChecked) { Snd.pop(); haptic(12); Voice.cheer(); }
   else { Snd.uncheck(); haptic(6); }
 
-  renderAll();
-
   const afterClear = dayStats(k).clear;
-  if (!wasChecked && !beforeClear && afterClear) {
-    if (ui.timerOpen) ui.pendingCelebrate = true;
-    else celebrate();
+  const cheer = !wasChecked && !beforeClear && afterClear;
+  const finish = () => {
+    renderAll();
+    if (cheer) {
+      if (ui.timerOpen) ui.pendingCelebrate = true;
+      else celebrate();
+    }
+  };
+
+  // '한 것 접기'가 켜져 있으면 체크한 카드가 부드럽게 접혀 사라진 뒤 목록을 다시 그린다 (약 320ms)
+  const li = (state.hideDone && !wasChecked && ui.tab === 'home' && k === todayKey())
+    ? $('#groupsWrap li.item[data-id="' + id + '"]')
+    : null;
+  if (li) {
+    li.style.height = li.offsetHeight + 'px';
+    li.style.overflow = 'hidden';
+    li.style.transition = 'height .3s ease, opacity .26s ease, transform .3s ease';
+    li.classList.add('is-leaving');
+    requestAnimationFrame(() => { li.style.height = '0px'; });
+    clearTimeout(foldLeaveTimer);
+    foldLeaveTimer = setTimeout(finish, 320);
+    return;
   }
+  finish();
+}
+
+/* '✅ 한 것 접기' 칩 — 완료한 루틴을 접어 둘지 고른다 */
+function toggleFoldDone() {
+  state.hideDone = !state.hideDone;
+  save();
+  Snd.tap(); haptic(6);
+  if (!state.hideDone) ui.doneOpen = false;
+  renderHome();
+}
+
+/* '✅ 완료한 루틴 N개 보기' 막대 — 그 안에서 완료한 루틈을 펼치고 접는다 */
+function toggleDoneFold() {
+  const box = $('#groupsWrap .donefold');
+  if (!box) return;
+  const body = box.querySelector('.donefold__body');
+  const head = box.querySelector('[data-donefold]');
+  if (!body) return;
+  ui.doneOpen = !ui.doneOpen;
+  const open = ui.doneOpen;
+  box.classList.toggle('is-open', open);
+  if (head) head.setAttribute('aria-expanded', open ? 'true' : 'false');
+  if (open) {
+    body.style.maxHeight = body.scrollHeight + 'px';
+  } else {
+    body.style.maxHeight = body.scrollHeight + 'px';
+    requestAnimationFrame(() => { body.style.maxHeight = '0px'; });
+  }
+  Snd.tap(); haptic(5);
 }
 
 /* ============================================================
@@ -2573,6 +2715,8 @@ function openWelcome() {
   const el = $('#welcomePopup');
   if (!el || !el.hidden || welcomeShown) return false;
   welcomeShown = true;
+  const msg = $('#welcomeMsg');
+  if (msg) msg.textContent = welcomeProgressText();
   el.hidden = false;
   syncScrollLock();
   setTimeout(() => {
@@ -3359,6 +3503,9 @@ document.addEventListener('click', function (ev) {
   const nightEl = ev.target.closest('[data-night]');
   if (nightEl) { closeNightPopup(true); return; }
 
+  if (ev.target.closest('#foldDoneChip')) { toggleFoldDone(); return; }
+  if (ev.target.closest('[data-donefold]')) { toggleDoneFold(); return; }
+
   const closeEl = ev.target.closest('[data-close]');
   if (closeEl) { closeModal(closeEl.dataset.close); return; }
 
@@ -3628,7 +3775,7 @@ window.__routine = {
   voicePicker: { render: renderVoicePicker, setPreset: setVoicePreset, setChoice: setVoiceChoice, setLang: setVoiceLang, sample: VOICE_SAMPLE, sampleEn: VOICE_SAMPLE_EN, welcomeEn: WELCOME_EN, cheersEn: CHEERS_EN, clearsEn: CLEARS_EN },
   hvoice: HVoice,
   snd: Snd,
-  welcome: { open: openWelcome, close: closeWelcome, play: playWelcomeSound, unlock: unlockAudio, nightWillShow: nightWillShow, get shown() { return welcomeShown; } },
+  welcome: { open: openWelcome, close: closeWelcome, play: playWelcomeSound, unlock: unlockAudio, progress: welcomeProgressText, nightWillShow: nightWillShow, get shown() { return welcomeShown; } },
   shoutPhase: shoutPhase,
   timer: T,
   ddayN: ddayN,
