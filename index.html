@@ -742,8 +742,11 @@ body.no-scroll{overflow:hidden}
 @media (min-width:428px){
   .welcome__stage.is-zoom .wstage__body{transform:translateY(30.6%) scale(var(--wzoom-lg,3.86))}
 }
+@media (min-width:452px){   /* 태블릿·PC에서도 같은 얼굴 크기로 */
+  .welcome__stage.is-zoom .wstage__body{transform:translateY(30.8%) scale(var(--wzoom-xl,4.15))}
+}
 /* 브이 포즈처럼 손을 든 옷은 손끝까지 다 담겨야 잘린 손이 보이지 않아요 */
-.welcome__stage[data-zfit="idol"].is-zoom .wstage__body{--wzoom:2.78;--wzoom-md:2.88;--wzoom-lg:2.98}
+.welcome__stage[data-zfit="idol"].is-zoom .wstage__body{--wzoom:2.78;--wzoom-md:2.88;--wzoom-lg:2.98;--wzoom-xl:3.3}
 /* 줌인 중에는 숨쉬기 흔들림을 잠시 멈춰 얼굴이 흔들리지 않게 */
 .welcome__stage.is-zoom #welcomeChar{animation:none}
 .welcome__stage.is-instant .wstage__body,
