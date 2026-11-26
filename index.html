@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="데일리 루틴">
 <meta name="description" content="허벅지·종아리 운동부터 영어 공부, 약 먹기까지 — 현호 님의 매일 루틴 체크 앱">
-<meta name="app-build" content="hyunho-voice-natural-2026-11-25">
+<meta name="app-build" content="hyunho-voice-picker-2026-11-26">
 <style>
 /* ================= 기본 ================= */
 :root{
@@ -306,6 +306,33 @@ body.no-scroll{overflow:hidden}
 .btn--primary{background:linear-gradient(135deg,#9E80F7,#7A57E4);color:#fff;box-shadow:0 10px 22px rgba(122,87,228,.3)}
 .btn--danger{background:#FFF1F2;color:var(--danger);border:1px solid #FFDADD}
 .btn--sm{padding:9px 13px;font-size:12.5px;border-radius:12px}
+
+
+/* ---------- 이비 목소리 고르기 ---------- */
+.card.vpk{background:linear-gradient(168deg,#F6F0FF 0%,#FCFAFF 52%,#FFF4FA 100%);border-color:#E9DFFB}
+.vpk .card__title{font-size:14.5px}
+.vpk__chips{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px}
+.vpk__chip{position:relative;padding:11px 6px;border-radius:15px;background:#fff;border:1px solid #E7DCFA;font-size:12.5px;font-weight:800;color:#5B4A86;transition:transform .12s ease,background .18s,border-color .18s,box-shadow .18s}
+.vpk__chip:active{transform:scale(.97)}
+.vpk__chip.is-on{background:linear-gradient(135deg,#B49CFA,#8B6CF0);color:#fff;border-color:transparent;box-shadow:0 8px 18px rgba(122,87,228,.28)}
+.vpk__badge{position:absolute;top:-6px;right:6px;padding:1px 6px;border-radius:8px;background:#FFEDF6;color:#D8558E;font-size:9px;font-weight:800;border:1px solid #FFD8E9}
+.vpk__chip.is-on .vpk__badge{background:#fff;color:#8B6CF0;border-color:#EFE6FF}
+.vpk__sub{display:flex;justify-content:space-between;align-items:center;margin-top:15px;font-size:11px;font-weight:800;color:#8A7FA8;letter-spacing:.2px}
+.vpk__voices{display:flex;flex-direction:column;gap:6px;margin-top:8px;max-height:236px;overflow-y:auto;overscroll-behavior:contain}
+.vpkrow{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:14px;background:#fff;border:1px solid #EEE6FB;transition:border-color .16s,box-shadow .16s,background .16s}
+.vpkrow.is-on{border-color:#B9A4F7;background:#FBF7FF;box-shadow:0 5px 14px rgba(122,87,228,.13)}
+.vpkrow__ico{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:#F3EEFF;font-size:14px;flex:none}
+.vpkrow.is-on .vpkrow__ico{background:linear-gradient(135deg,#C9B6FF,#A78BFA)}
+.vpkrow__text{flex:1;min-width:0}
+.vpkrow__name{display:flex;align-items:center;gap:5px;font-size:12.5px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vpkrow__meta{display:block;font-size:10px;color:var(--muted);font-weight:700;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vpkrow__now,.vpkrow__rec{font-style:normal;font-size:9px;font-weight:800;padding:1px 5px;border-radius:7px;flex:none}
+.vpkrow__now{background:#EFE7FF;color:#6B4BD6}
+.vpkrow__rec{background:#FFF0F6;color:#D8558E}
+.vpkplay{flex:none;padding:7px 10px;border-radius:11px;background:#F1EBFF;color:#6B4BD6;font-size:10.5px;font-weight:800;border:1px solid #E2D5FF;white-space:nowrap;transition:transform .12s,background .16s}
+.vpkplay:active{transform:scale(.95)}
+.vpkrow.is-on .vpkplay{background:linear-gradient(135deg,#9E80F7,#7A57E4);color:#fff;border-color:transparent}
+.vpk__empty{margin:8px 2px 0;font-size:11px;font-weight:700;color:#8A7FA8;line-height:1.5}
 
 /* ================= 모달 / 시트 ================= */
 .modal{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-end;justify-content:center}
@@ -784,6 +811,20 @@ body.no-scroll{overflow:hidden}
       <button class="btn btn--primary btn--full" id="addBtn">＋ 루틴 추가</button>
     </div>
 
+    <!-- 이비 목소리 고르기 -->
+    <div class="card vpk" id="voicePickerCard">
+      <h3 class="card__title">🎙️ 이비 목소리 고르기</h3>
+      <p class="hint">말투를 누르면 바로 한마디 들려드려요. 폰에 있는 한국어 목소리 중에서도 골라 보세요.</p>
+      <div class="vpk__chips" id="voiceChips" role="group" aria-label="이비 말투 고르기">
+        <button class="vpk__chip" type="button" data-vpreset="natural" aria-pressed="false">자연스럽게</button>
+        <button class="vpk__chip is-on" type="button" data-vpreset="cute" aria-pressed="true">살짝 귀엽게<span class="vpk__badge">기본</span></button>
+        <button class="vpk__chip" type="button" data-vpreset="bright" aria-pressed="false">톡톡 발랄</button>
+        <button class="vpk__chip" type="button" data-vpreset="gentle" aria-pressed="false">차분 다정</button>
+      </div>
+      <p class="vpk__sub"><span>폰에 있는 목소리</span><span id="voiceCount"></span></p>
+      <div class="vpk__voices" id="voiceList" role="group" aria-label="한국어 목소리 목록"></div>
+    </div>
+
     <div class="card">
       <h3 class="card__title">설정</h3>
       <label class="switchrow">
@@ -1135,6 +1176,8 @@ function makeDefaults() {
     sound: true,
     haptic: true,
     voice: true,
+    voicePreset: 'cute',     // 말투: natural | cute | bright | gentle
+    voiceUri: '',            // '' 이면 이비가 자동으로 고른 목소리
     routines: DEFAULTS.map(r => Object.assign({}, r, {
       color: r.color || PALETTE[0],
       createdAt: t,
@@ -1185,6 +1228,8 @@ function load() {
     if (typeof s.sound !== 'boolean') s.sound = true;
     if (typeof s.haptic !== 'boolean') s.haptic = true;
     if (typeof s.voice !== 'boolean') s.voice = true;
+    if (!Voice.presets[s.voicePreset]) s.voicePreset = 'cute';
+    if (typeof s.voiceUri !== 'string') s.voiceUri = '';
     if (!s.days || typeof s.days !== 'object') s.days = {};
     if (!s.lastDone || typeof s.lastDone !== 'object') s.lastDone = {};
     if (!s.createdAt) s.createdAt = todayKey();
@@ -1623,52 +1668,99 @@ const CLEARS = [
   '루틴 전부 완료! 오늘 하루 정말 멋졌어요.'
 ];
 
+const VOICE_SAMPLE = '현호 님, 오늘도 화이팅이에요! 💜';
+
 const Voice = {
   supported: (typeof window !== 'undefined') && ('speechSynthesis' in window) && (typeof window.SpeechSynthesisUtterance === 'function'),
   ko: null,
   lastCheer: -1,
   lastAt: 0,
   quietUntil: 0,     // 인사말이 끝날 때까지 끼어들지 않게
+  /* 말투 프리셋 — pitch(높낮이) · rate(속도) */
+  presets: {
+    natural: { label: '자연스럽게', pitch: 1.00, rate: 0.98 },
+    cute:    { label: '살짝 귀엽게', pitch: 1.05, rate: 1.01, badge: '기본' },
+    bright:  { label: '톡톡 발랄',  pitch: 1.08, rate: 1.03 },
+    gentle:  { label: '차분 다정',  pitch: 0.98, rate: 0.95 }
+  },
+  preset() {
+    return this.presets[(state && state.voicePreset)] || this.presets.cute;
+  },
+  /* 폰에 들어 있는 한국어 목소리 목록 */
+  koVoices() {
+    if (!this.supported) return [];
+    try {
+      const vs = window.speechSynthesis.getVoices() || [];
+      return vs.filter(v => /^ko([-_]|$)/i.test(v.lang || ''));
+    } catch (e) { return []; }
+  },
+  /* 이비 목소리와 가장 비슷한 후보 — 밝고 자연스러운 한국어 여성 음성 우선 */
+  score(v) {
+    const n = ((v.name || '') + ' ' + (v.voiceURI || '')).toLowerCase();
+    let s = 0;
+    if (/yuna|유나|seohyun|서현|sunhi|선희|sora|소라|nari|나래|jiyeon|지연|goun|고운|heami|해미|kyuri|규리|goeun|지현|jihyun/.test(n)) s += 60;
+    if (/natural|neural|premium|enhanced|wavenet/.test(n)) s += 26;
+    if (/google/.test(n)) s += 22;
+    if (/female|여성/.test(n)) s += 14;
+    if (/male|남성|injoon|인준|junwoo|준우|hyunsu|현수/.test(n)) s -= 70;
+    if (/^ko[-_]?kr$/i.test(v.lang)) s += 12;
+    if (v.localService === false) s += 6;      // 클라우드 음성은 대체로 더 매끄러움
+    if (v.default) s += 1;
+    return s;
+  },
+  autoPick(vs) {
+    const arr = vs || this.koVoices();
+    return arr.slice().sort((a, b) => this.score(b) - this.score(a))[0] || null;
+  },
+  /* 현호 님이 직접 고른 목소리 (기기 목록이 바뀌어도 이름으로 한 번 더 찾아본다) */
+  chosen(vs) {
+    if (!state || !state.voiceUri) return null;
+    const arr = vs || this.koVoices();
+    return arr.find(v => v.voiceURI === state.voiceUri) ||
+           arr.find(v => v.name === state.voiceUri) || null;
+  },
   init() {
     if (!this.supported) return;
     const pick = () => {
-      try {
-        const vs = window.speechSynthesis.getVoices() || [];
-        const ko = vs.filter(v => /^ko([-_]|$)/i.test(v.lang || ''));
-        if (!ko.length) { this.ko = null; return; }
-        /* 이비 목소리와 가장 비슷한 후보를 고른다 — 밝고 자연스러운 한국어 여성 음성 우선 */
-        const score = v => {
-          const n = ((v.name || '') + ' ' + (v.voiceURI || '')).toLowerCase();
-          let s = 0;
-          if (/yuna|유나|seohyun|서현|sunhi|선희|sora|소라|nari|나래|jiyeon|지연|goun|고운|heami|해미|kyuri|규리|goeun|지현|jihyun/.test(n)) s += 60;
-          if (/natural|neural|premium|enhanced|wavenet/.test(n)) s += 26;
-          if (/google/.test(n)) s += 22;
-          if (/female|여성/.test(n)) s += 14;
-          if (/male|남성|injoon|인준|junwoo|준우|hyunsu|현수/.test(n)) s -= 70;
-          if (/^ko[-_]?kr$/i.test(v.lang)) s += 12;
-          if (v.localService === false) s += 6;      // 클라우드 음성은 대체로 더 매끄러움
-          if (v.default) s += 1;
-          return s;
-        };
-        this.ko = ko.slice().sort((a, b) => score(b) - score(a))[0] || null;
-      } catch (e) {}
+      const vs = this.koVoices();
+      this.ko = this.chosen(vs) || this.autoPick(vs);
+      renderVoicePicker();
     };
     pick();
     /* 크롬은 처음엔 빈 목록을 주고 나중에 채우므로, 목록이 바뀔 때마다 다시 고른다 */
     try { window.speechSynthesis.onvoiceschanged = pick; } catch (e) {}
     try { window.speechSynthesis.addEventListener('voiceschanged', pick); } catch (e) {}
+    /* 안드로이드 크롬이 목록을 늦게 채우는 경우가 있어 한 번 더 확인한다 */
+    setTimeout(pick, 400);
+    setTimeout(pick, 1400);
+  },
+  utter(text, voice) {
+    const p = this.preset();
+    const u = new window.SpeechSynthesisUtterance(text);
+    u.lang = 'ko-KR';
+    const v = voice || this.ko;
+    if (v) u.voice = v;
+    u.rate = p.rate;      // 고른 말투의 속도
+    u.pitch = p.pitch;    // 고른 말투의 높낮이
+    u.volume = 0.95;
+    return u;
   },
   say(text) {
     if (!this.supported || !state || !state.voice || !state.sound) return false;
     try {
       window.speechSynthesis.cancel();
-      const u = new window.SpeechSynthesisUtterance(text);
-      u.lang = 'ko-KR';
-      if (this.ko) u.voice = this.ko;
-      u.rate = 0.98;      // 자연스러운 기본 속도
-      u.pitch = 1.0;      // 인위적인 높낮이 없이 담백하게
-      u.volume = 0.95;
-      window.speechSynthesis.speak(u);
+      window.speechSynthesis.speak(this.utter(text));
+      return true;
+    } catch (e) { return false; }
+  },
+  /* 목소리 고르기에서 직접 눌렀을 때 — 소리 설정과 상관없이 한 번 들려준다 */
+  preview(text, voice) {
+    if (!this.supported) return false;
+    try {
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(this.utter(text || VOICE_SAMPLE, voice));
+      this.lastAt = Date.now();
+      this.quietUntil = Date.now() + 2600;   // 미리 듣는 동안 응원 멘트가 끼어들지 않게
       return true;
     } catch (e) { return false; }
   },
@@ -1999,6 +2091,83 @@ function renderStats() {
 /* ============================================================
    편집 탭
    ============================================================ */
+/* ============================================================
+   이비 목소리 고르기 (편집 탭)
+   ============================================================ */
+function renderVoicePicker() {
+  const wrap = $('#voiceList');
+  const chips = $('#voiceChips');
+  if (!wrap || !chips) return;
+
+  const curKey = (state && Voice.presets[state.voicePreset]) ? state.voicePreset : 'cute';
+  $$('[data-vpreset]', chips).forEach(b => {
+    const on = b.dataset.vpreset === curKey;
+    b.classList.toggle('is-on', on);
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+
+  const countEl = $('#voiceCount');
+  const vs = Voice.koVoices();
+  const auto = Voice.autoPick(vs);
+  const pickUri = (state && state.voiceUri) || '';
+  if (countEl) countEl.textContent = vs.length ? vs.length + '개' : '';
+
+  if (!Voice.supported) {
+    wrap.innerHTML = '<p class="vpk__empty">이 브라우저에서는 목소리를 고를 수 없어요. 응원 문구는 화면으로만 보여 드릴게요.</p>';
+    return;
+  }
+
+  const rows = [];
+  rows.push(
+    '<div class="vpkrow' + (pickUri ? '' : ' is-on') + '" data-vuri="auto">' +
+      '<span class="vpkrow__ico">✨</span>' +
+      '<span class="vpkrow__text">' +
+        '<span class="vpkrow__name">자동 추천' + (pickUri ? '' : '<i class="vpkrow__now">선택됨</i>') + '</span>' +
+        '<span class="vpkrow__meta">' + (auto ? esc(auto.name || '한국어 음성') + ' 목소리로 읽어 드려요' : '폰에 한국어 목소리가 아직 없어요') + '</span>' +
+      '</span>' +
+      '<button class="vpkplay" type="button" data-vuri="auto" aria-label="자동 추천 목소리 들어보기">▶ 들어보기</button>' +
+    '</div>'
+  );
+  if (!vs.length) {
+    rows.push('<p class="vpk__empty">폰에 있는 한국어 목소리를 불러오는 중이에요. 잠시 뒤 다시 열어 보세요.</p>');
+  }
+  vs.forEach((v, i) => {
+    const uri = v.voiceURI || v.name || ('ko' + i);
+    const on = !!pickUri && (uri === pickUri || v.name === pickUri);
+    const rec = !pickUri && auto && auto.voiceURI === v.voiceURI && auto.name === v.name;
+    rows.push(
+      '<div class="vpkrow' + (on ? ' is-on' : '') + '" data-vuri="' + esc(uri) + '">' +
+        '<span class="vpkrow__ico">🗣️</span>' +
+        '<span class="vpkrow__text">' +
+          '<span class="vpkrow__name">' + esc(v.name || '한국어 음성') + (on ? '<i class="vpkrow__now">선택됨</i>' : (rec ? '<i class="vpkrow__rec">추천</i>' : '')) + '</span>' +
+          '<span class="vpkrow__meta">' + esc(v.lang || 'ko') + (v.localService === false ? ' · 온라인 음성' : ' · 기기에 저장된 음성') + '</span>' +
+        '</span>' +
+        '<button class="vpkplay" type="button" data-vuri="' + esc(uri) + '" aria-label="' + esc((v.name || '한국어 음성') + ' 들어보기') + '">▶ 들어보기</button>' +
+      '</div>'
+    );
+  });
+  wrap.innerHTML = rows.join('');
+}
+
+function setVoicePreset(key, speak) {
+  if (!Voice.presets[key]) return;
+  state.voicePreset = key;
+  save();
+  renderVoicePicker();
+  if (speak) Voice.preview(VOICE_SAMPLE, Voice.ko);
+  haptic(8);
+}
+
+function setVoiceChoice(uri, speak) {
+  state.voiceUri = (uri && uri !== 'auto') ? String(uri) : '';
+  save();
+  const vs = Voice.koVoices();
+  Voice.ko = Voice.chosen(vs) || Voice.autoPick(vs);
+  renderVoicePicker();
+  if (speak) Voice.preview(VOICE_SAMPLE, Voice.ko);
+  haptic(8);
+}
+
 function renderEdit() {
   const t = todayKey();
   $('#editList').innerHTML = state.routines.map((r, i) => {
@@ -2023,6 +2192,7 @@ function renderEdit() {
     }
     return row;
   }).join('');
+  renderVoicePicker();
 }
 
 /* ============================================================
@@ -3053,6 +3223,18 @@ $('#voiceToggle').addEventListener('change', e => {
   else Voice.stop();
 });
 
+/* 목소리 고르기 — 말투 칩과 목소리 줄 */
+$('#voiceChips').addEventListener('click', e => {
+  const b = e.target.closest('[data-vpreset]');
+  if (!b) return;
+  setVoicePreset(b.dataset.vpreset, true);
+});
+$('#voiceList').addEventListener('click', e => {
+  const b = e.target.closest('[data-vuri]');
+  if (!b) return;
+  setVoiceChoice(b.dataset.vuri, true);
+});
+
 $('#addBtn').addEventListener('click', () => openEdit(null));
 $('#fSave').addEventListener('click', saveEdit);
 
@@ -3225,6 +3407,7 @@ window.__routine = {
   duesFor: duesFor,
   streak: streak,
   voice: Voice,
+  voicePicker: { render: renderVoicePicker, setPreset: setVoicePreset, setChoice: setVoiceChoice, sample: VOICE_SAMPLE },
   hvoice: HVoice,
   snd: Snd,
   welcome: { open: openWelcome, close: closeWelcome, play: playWelcomeSound, unlock: unlockAudio, nightWillShow: nightWillShow, get shown() { return welcomeShown; } },
