@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="데일리 루틴">
 <meta name="description" content="허벅지·종아리 운동부터 영어 공부, 약 먹기까지 — 현호 님의 매일 루틴 체크 앱">
-<meta name="app-build" content="hyunho-zoom-expressions-2026-11-26">
+<meta name="app-build" content="hyunho-zoom-keep-outfit-2026-11-26">
 <style>
 /* ================= 기본 ================= */
 :root{
@@ -721,26 +721,42 @@ body.no-scroll{overflow:hidden}
   75% {transform:scale(1.010) rotate(.26deg)}
   100%{transform:scale(1) rotate(0deg)}
 }
-/* ===== 전신 → 얼굴 줌인 연출 (환영 팝업 무대) ===== */
+/* ===== 전신 → 얼굴 줌인 연출 (환영 팝업 무대) =====
+   · 지금 입고 있는 옷(#welcomeChar)을 그대로 카메라로 당겨 얼굴·상반신을 비춘다.
+     흰 슈트 얼굴 그림은 절대 덮지 않는다 — 옷을 갈아입으면 그 옷으로 줌인된다. */
 .wstage__body{
   position:absolute;inset:0;z-index:1;display:flex;align-items:flex-end;justify-content:center;
-  transform-origin:50% 9%;transition:transform .9s cubic-bezier(.22,1,.36,1);will-change:transform;
+  transform-origin:50% 14.4%;transition:transform .9s cubic-bezier(.22,1,.36,1);will-change:transform;
 }
-.welcome__stage.is-zoom .wstage__body{transform:translateY(12.3%) scale(3.53)}
-/* 줌인 중에는 숨쉬기 흔들림을 잠시 멈춰 표정 얼굴과 어긋나지 않게 */
+.welcome__stage.is-zoom .wstage__body{transform:translateY(30.6%) scale(2.6)}
+/* 줌인 중에는 숨쉬기 흔들림을 잠시 멈춰 얼굴이 흔들리지 않게 */
 .welcome__stage.is-zoom #welcomeChar{animation:none}
 .welcome__stage.is-instant .wstage__body,
 .welcome__stage.is-instant #welcomeZoomFace{transition:none!important}
+/* 예전 흰 슈트 얼굴 그림 — 이제 무대에 절대 올리지 않는다(숨김 전용) */
 #welcomeZoomFace{
   position:absolute;left:0;top:0;z-index:2;
   width:100%;height:100%;max-width:none;margin:0;
   object-fit:cover;object-position:center center;
-  opacity:0;pointer-events:none;
+  display:none!important;opacity:0!important;pointer-events:none;
   transform:scale(1.05);transform-origin:50% 44%;
-  transition:opacity .36s ease .3s,transform .9s cubic-bezier(.22,1,.36,1);
-  animation:none;
+  transition:none;animation:none;
 }
-.welcome__stage.is-zoom #welcomeZoomFace{opacity:1;transform:scale(1)}
+/* 무대 위 작은 기분 말풍선 — 옷을 가리지 않고 오늘의 응원만 살짝 */
+.wmood{
+  position:absolute;z-index:4;left:8px;top:8px;max-width:54%;
+  display:inline-flex;align-items:center;gap:4px;padding:5px 9px;border-radius:999px;
+  background:linear-gradient(180deg,#FFFFFF 0%,#FFF3FB 100%);
+  border:1.5px solid #F7D9EC;box-shadow:0 6px 14px rgba(186,74,140,.14);
+  font-size:10.5px;font-weight:900;color:#A8478A;letter-spacing:-.02em;
+  white-space:nowrap;pointer-events:none;
+  animation:wmoodIn .5s .28s cubic-bezier(.2,1.6,.4,1) both;
+}
+.wmood__txt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wmood.is-pop{animation:wmoodPop .52s cubic-bezier(.2,1.6,.4,1)}
+@keyframes wmoodIn{from{opacity:0;transform:translateY(-6px) scale(.86)}to{opacity:1;transform:none}}
+@keyframes wmoodPop{0%{transform:scale(.9)}55%{transform:scale(1.08)}100%{transform:none}}
+@media (max-width:359px){.wmood{font-size:9.8px;padding:4px 8px;max-width:58%}}
 .welcome__stage.is-zoom .stage-shimmer{animation-duration:2.4s}
 .wstage__pill{
   position:absolute;left:8px;bottom:8px;z-index:5;
@@ -1334,6 +1350,7 @@ body.no-scroll{overflow:hidden}
       <i class="dspark" style="right:8%;bottom:14%;animation-delay:3.7s;width:6px;height:6px" aria-hidden="true"></i>
       <span class="stage-vig" aria-hidden="true"></span>
       <div class="wcount" id="welcomeCountBox" aria-hidden="true"><span class="wcount__ico" id="welcomeCountIco">☝️</span><span class="wcount__txt" id="welcomeCountTxt">1개 남았네!</span></div>
+      <div class="wmood" id="welcomeMood" data-mood="fired" aria-live="polite"><span class="wmood__txt" id="welcomeMoodTxt">✊ 파이팅!</span></div>
       <div class="wstage__body" id="welcomeBody">
         <img id="welcomeChar" alt="오늘의 모습으로 반갑게 인사하는 캐릭터" width="440" height="661" decoding="async">
       </div>
@@ -1421,6 +1438,13 @@ const FACE_LABEL = {
   wink: '두근두근 윙크하는 표정',
   cheer: '행복 폭발 환호하는 표정'
 };
+/* 무대 위 작은 기분 말풍선 — 남은 루틴에 맞춰 응원 문구만 바뀐다 */
+const WELCOME_MOODS = {
+  fired: '✊ 파이팅!',
+  smile: '😊 잘하고 있어요!',
+  wink: '😉 거의 다 왔다!',
+  cheer: '🤩 올클리어!'
+};
 function todayLeftCount() {
   const st = dayStats(todayKey());
   return Math.max(0, st.total - st.done);
@@ -1455,12 +1479,28 @@ let welcomeZoomTimer = 0;
 let welcomeZoomed = false;
 function renderWelcomeFace() {
   const img = $('#welcomeZoomFace');
-  if (!img) return;
   const key = faceForLeft(todayLeftCount());
   const src = EVE_FACES[key] || EVE_FACES.smile;
-  if (img.getAttribute('src') !== src) img.src = src;
-  img.dataset.face = key;
-  img.alt = '이비 — ' + FACE_LABEL[key];
+  if (img) {
+    if (img.getAttribute('src') !== src) img.src = src;
+    img.dataset.face = key;
+    img.alt = '이비 — ' + FACE_LABEL[key];
+  }
+  paintWelcomeMood(key);
+}
+/* 무대 위엔 옷을 가리는 얼굴 그림 대신, 작은 응원 말풍선만 띄운다 */
+function paintWelcomeMood(key) {
+  const box = $('#welcomeMood');
+  const txt = $('#welcomeMoodTxt');
+  const mood = WELCOME_MOODS[key] || WELCOME_MOODS.smile;
+  if (txt && txt.textContent !== mood) txt.textContent = mood;
+  if (!box) return;
+  if (box.dataset.mood !== key) {
+    box.dataset.mood = key;
+    box.classList.remove('is-pop');
+    void box.offsetWidth;
+    box.classList.add('is-pop');
+  }
 }
 function setWelcomeZoom(on, opt) {
   const stage = $('#welcomeStage');
